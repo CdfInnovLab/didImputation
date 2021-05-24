@@ -1,0 +1,37 @@
+Package: didImputation
+Title: Staggered difference-in-differences estimation
+Version: 0.0.1.0
+Authors@R: c(
+    person(given = "Antoine",
+           family = "Mayerowitz",
+           role = c("aut", "cre"),
+           email = "a.mayerowitz@gmailcom"),
+    person(given = "Maxime",
+           family = "Gravoueille",
+           role = c("aut"),
+           email = "maximegravoueille@gmailcom"))    
+Description: Set of functions to estimate, report and visualize results in staggered difference-in-differences (DiD) setup using the imputation approach of Borusyak, Jaravel, and Spiess (2021). The standard DiD setup involves two periods and two groups (one treated and one untreated), it relies on parallel trend assumption to estimate the treatment effect of the treated. The staggered DiD setup is the generalization of this approach to multiple periods and multiple groups (i.e. individuals treated at different time periods.). Recent literature stress out the need to not use the standard two-way fixed effect (TWFE) regression to estimate those models. This package implements a method of imputation to estimate the average treatment effect. The package uses untreated observations to predict the counterfactual outcome on treated observations and provide the appropriate Standard errors. It provides ways to test for parallel trends.  
+Depends:
+    R (>= 3.5),
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Suggests: 
+    markdown,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    covr,
+    badger,
+Config/testthat/edition: 3
+Imports: 
+    data.table,
+    ggplot2,
+    fixest (>= 0.9),
+    collapse,
+    rlang,
+    purrr,
+    stats
+VignetteBuilder: knitr

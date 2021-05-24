@@ -1,0 +1,90 @@
+---
+output: github_document
+title: Did Imputation
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+<img src="man/figures/logo.png" width="150px" align="right" />
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/cdfInnovLab/didimputation/workflows/R-CMD-check/badge.svg)](https://github.com/CdfInnovLab/didimputation/actions)
+
+[![Codecov test coverage](https://codecov.io/gh/CdfInnovLab/didImputation/branch/master/graph/badge.svg)](https://codecov.io/gh/CdfInnovLab/didImputation?branch=master)
+
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+
+`r badger::badge_devel("CdfInnovLab/didImputation", "blue")`
+
+`r badger::badge_code_size("CdfInnovLab/didImputation")`
+
+<!-- badges: end -->
+
+Estimation of staggered Difference-in-Differences using the imputation approach
+of Borusyak, Jaravel, and Spiess (2021). The packages allows for:
+
+  - Multiple time periods
+  
+  - Staggered design (i.e., units are treated at different time periods)
+  
+  - Continuous controls
+
+The package implements an imputation method to estimate the treatment effect and
+pre-trend testing in difference-in-differences designs with staggered adoption (i.e
+where units are treated at different time periods). Recent literature stress out
+the importance of not using the standard _twoway fixed effect_ regression.
+
+The standard DiD setup involves two periods and two groups (one treated and one untreated), it relies on parallel trend assumption to estimate the treatment effect of the treated. The staggered DiD setup is the generalization of this approach to multiple periods and multiple groups (i.e. individuals treated at different time periods.). Recent literature stress out the need to not use the standard two-way fixed effect (TWFE) regression to estimate those models. This package implements a method of imputation to estimate the average treatment effect. The package uses untreated observations to predict the counterfactual outcome on treated observations and provide the appropriate Standard errors. It provides ways to test for parallel trends.
+
+## Installation
+You can install the github version with `devtools` or `renv`(recommended, [read more about renv](https://rstudio.github.io/renv/articles/renv.html))
+
+``` r
+devtools::install("CdfInnovLab/didImputation")
+```
+
+## Usage
+```{r library}
+library(didImputation)
+```
+
+
+
+```{r summary}
+data(did_simulated)
+
+res <- didImputation(y0 = y ~ 0 | i + t,
+                    cohort = 'g',
+                    data = did_simulated)
+summary(res)
+```
+
+
+You can print the result easily with `didplot`
+```{r pressure, echo = FALSE}
+didplot(res)
+```
+
+# TODO
+
+- [ ] Estimation weights
+- [ ] Triple differences
+- [ ] Vignette
+- [ ] Time invariant controls
+- [ ] Unit invariant controls
+- [ ] Custom cluster
+
+
+## Reference
+[Borusyak, K., Jaravel, X., & Spiess, J. (2021). Revisiting event study designs: Robust and efficient estimation. Working paper.](https://www.google.com/url?q=https%3A%2F%2Fwww.dropbox.com%2Fs%2F0o79nppmve792nf%2Fborusyak_hull_jan21.pdf%3Fraw%3D1&sa=D&sntz=1&usg=AFQjCNE2vdSXDowNFgVeRfpaUacGMQop-A)
+
+## See also
+[didimputation](https://github.com/kylebutts/didimputation): Another implementation using sparse matrix inversion.

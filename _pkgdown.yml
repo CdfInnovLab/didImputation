@@ -1,0 +1,12 @@
+title: didImputation
+
+
+reference:
+  - title: Estimation
+    desc: Performing the event study estimation
+    contents:
+      - didImputation
+  - title: Visualization
+    desc: Visualizing the estimation
+    contents:
+      - didplot
