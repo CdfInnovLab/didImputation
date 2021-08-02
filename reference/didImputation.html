@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didImputation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
       </span>
     </div>
 
@@ -139,16 +139,15 @@
   nevertreated.value <span class='op'>=</span> <span class='cn'>Inf</span>,
   unit <span class='op'>=</span> <span class='cn'>NULL</span>,
   time <span class='op'>=</span> <span class='cn'>NULL</span>,
-  coef <span class='op'>=</span> <span class='cn'>NULL</span>,
   w <span class='op'>=</span> <span class='cn'>NULL</span>,
+  coef <span class='op'>=</span> <span class='op'>-</span><span class='cn'>Inf</span><span class='op'>:</span><span class='cn'>Inf</span>,
   OATT <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  se <span class='op'>=</span> <span class='cn'>T</span>,
+  with.se <span class='op'>=</span> <span class='cn'>TRUE</span>,
   tol <span class='op'>=</span> <span class='fl'>1e-06</span>,
   maxit <span class='op'>=</span> <span class='fl'>100</span>,
   mutatedata <span class='op'>=</span> <span class='cn'>FALSE</span>,
   verbose <span class='op'>=</span> <span class='fl'>0</span>,
-  effective.sample <span class='op'>=</span> <span class='fl'>30</span>,
-  <span class='va'>...</span>
+  effective.sample <span class='op'>=</span> <span class='fl'>30</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -179,19 +178,19 @@
       <td><p>Character, default is <code>NULL</code>. Time period identifier. If <code>NULL</code>, it default to the second fixed effect.</p></td>
     </tr>
     <tr>
-      <th>coef</th>
-      <td><p>Numeric vector of leads and lags (eg <code>coef = c(-5, 8)</code>). By default estimates all lags available.</p></td>
-    </tr>
-    <tr>
       <th>w</th>
       <td><p>(not yet implemented) Numerical or Variable name. Default is <code>NULL</code>. Estimation weights</p></td>
+    </tr>
+    <tr>
+      <th>coef</th>
+      <td><p>R Expression of leads and lags (eg <code>coef = -5:8</code>). By default estimates whole dynamic effect. See Details.</p></td>
     </tr>
     <tr>
       <th>OATT</th>
       <td><p>Logical, default is <code>FALSE</code>. If <code>TRUE</code> then the overall average treatment effect is computed instead of ATT at each horizon.</p></td>
     </tr>
     <tr>
-      <th>se</th>
+      <th>with.se</th>
       <td><p>Logical, default is <code>TRUE</code>. Should standard errors be reported</p></td>
     </tr>
     <tr>
@@ -230,19 +229,136 @@ It may result in lost observations and bugs.</p></td>
 <dt>niterations</dt><dd><p>Number of iterations it took to compute the weights.</p></dd>
 <dt>pre_trends</dt><dd><p><code>fixest</code> regression object for the pre-trends estimation.</p></dd>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>See below for additional details on some arguments.</p>
+    <h2 class="hasAnchor" id="estimated-coefficients"><a class="anchor" href="#estimated-coefficients"></a>Estimated coefficients</h2>
+
+    
+
+
+<p>By default, the function will estimate all coefficients available. You can
+customize this behavior with the <code>coef</code> option. The option takes an R
+expression of the form <code>-{leads}:{lags}</code>. The default behavior is to estimate
+all available coefficients such that <code>coef = -Inf:Inf</code>.</p>
+<p>For pre-trend coefficients, by default the function will set the greatest
+leads as the reference group if <code>-Inf</code> is set.</p>
+    <h2 class="hasAnchor" id="effective-sample-a-k-a-herfindahl-condition"><a class="anchor" href="#effective-sample-a-k-a-herfindahl-condition"></a>Effective sample a.k.a. Herfindahl condition</h2>
+
+    
+
+
+<p>Borusyak, K., Jaravel, X., &amp; Spiess, J. give a condition on weights such that
+consistency of estimators holds. This condition states that the Herfindahl
+index of weights must converge to zero. Another interpretation is that the
+inverse of the index is a measure of 'effective sample size'. Authors
+recommand an effective sample size of at least 30. If the effective sample
+size is lower, a warning will be thrown.</p>
+    <h2 class="hasAnchor" id="cohort"><a class="anchor" href="#cohort"></a>Cohort</h2>
+
+    
+
+
+<p>The <code>cohort</code> argument is the date of treatment of the observation. By default
+it expect <code>Inf</code> for never treated individuals. You can override this behavior
+by setting another value to <code>nevertreated.value</code>.</p>
+    <h2 class="hasAnchor" id="standard-errors"><a class="anchor" href="#standard-errors"></a>Standard-errors</h2>
+
+    
+
+
+<p>The standard errors are computed using an alternating projection method. You
+can tweek its meta-parameter by changing <code>tol</code> and <code>maxit</code>.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Borusyak, K., Jaravel, X., &amp; Spiess, J. (2021). Revisiting event study designs: Robust and efficient estimation. Working paper.</p>
 <p>Stata implementation from the authors:</p>
 <p>did_imputation (<a href='https://github.com/borusyak/did_imputation'>https://github.com/borusyak/did_imputation</a>)</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p>did2s from Kyle F. Butts (<a href='https://github.com/kylebutts/did2s'>https://github.com/kylebutts/did2s</a>)</p></div>
+<p>Another R implementation using sparse matrix inversion:
+didimputation (<a href='https://github.com/kylebutts/didimputation'>https://github.com/kylebutts/didimputation</a>)</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Antoine Mayerowitz</p>
 <p>Maxime Gravoueille</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'>#Load example data</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>did_simulated</span><span class='op'>)</span>
+
+<span class='co'># Estimate the overall average treatment effect on treated and all available pre-trends</span>
+<span class='fu'>didImputation</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>|</span> <span class='va'>i</span> <span class='op'>+</span> <span class='va'>t</span>,
+              cohort <span class='op'>=</span> <span class='st'>'g'</span>,
+              OATT <span class='op'>=</span> <span class='cn'>TRUE</span>,
+              data <span class='op'>=</span> <span class='va'>did_simulated</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Event Study: imputation method. Dep. Var.:  y 
+#&gt; Counterfactual model:  y ~ 0 | i + t 
+#&gt; Observations: 1500 
+#&gt;         Estimate Std. Error    t value     Pr(&gt;|t|))
+#&gt; k::-4 0.05837981  0.2279555  0.2561018  7.980837e-01
+#&gt; k::-3 0.12351493  0.2384032  0.5180927  6.048537e-01
+#&gt; k::-2 0.20413885  0.2568542  0.7947654  4.275069e-01
+#&gt; k::-1 0.05923100  0.2842246  0.2083950  8.350909e-01
+#&gt; k::0  2.32785342  0.1031787 22.5613832 1.038251e-112
+#&gt;  ...... 0  rows not shown.</div><div class='input'>
+<span class='co'># Estimate the full dynamic model</span>
+<span class='fu'>didImputation</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>|</span> <span class='va'>i</span> <span class='op'>+</span> <span class='va'>t</span>,
+              cohort <span class='op'>=</span> <span class='st'>'g'</span>,
+              data <span class='op'>=</span> <span class='va'>did_simulated</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Event Study: imputation method. Dep. Var.:  y 
+#&gt; Counterfactual model:  y ~ 0 | i + t 
+#&gt; Observations: 1500 
+#&gt;      Estimate Std. Error  t value    Pr(&gt;|t|))
+#&gt; k::0 0.973520 0.09719356 10.01630 1.292486e-23
+#&gt; k::1 2.085544 0.10992597 18.97226 2.892152e-80
+#&gt; k::2 2.990625 0.14310200 20.89856 5.518751e-97
+#&gt; k::3 3.980677 0.18913808 21.04641 2.466738e-98
+#&gt; k::4 4.774795 0.25861218 18.46315 4.087941e-76
+#&gt;  ...... 4  rows not shown.</div><div class='input'>
+<span class='co'># Estimate positive (lags) coefficients</span>
+<span class='fu'>didImputation</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>|</span> <span class='va'>i</span> <span class='op'>+</span> <span class='va'>t</span>,
+              cohort <span class='op'>=</span> <span class='st'>'g'</span>,
+              coef <span class='op'>=</span> <span class='fl'>0</span><span class='op'>:</span><span class='cn'>Inf</span>,
+              data <span class='op'>=</span> <span class='va'>did_simulated</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Event Study: imputation method. Dep. Var.:  y 
+#&gt; Counterfactual model:  y ~ 0 | i + t 
+#&gt; Observations: 1500 
+#&gt;      Estimate Std. Error  t value    Pr(&gt;|t|))
+#&gt; k::0 0.973520 0.09719356 10.01630 1.292486e-23
+#&gt; k::1 2.085544 0.10992597 18.97226 2.892152e-80
+#&gt; k::2 2.990625 0.14310200 20.89856 5.518751e-97
+#&gt; k::3 3.980677 0.18913808 21.04641 2.466738e-98
+#&gt; k::4 4.774795 0.25861218 18.46315 4.087941e-76
+#&gt;  ...... 0  rows not shown.</div><div class='input'>
+<span class='co'># Estimate first 3 post treatment coefficients</span>
+<span class='fu'>didImputation</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>|</span> <span class='va'>i</span> <span class='op'>+</span> <span class='va'>t</span>,
+              cohort <span class='op'>=</span> <span class='st'>'g'</span>,
+              coef <span class='op'>=</span> <span class='fl'>0</span><span class='op'>:</span><span class='fl'>2</span>,
+              data <span class='op'>=</span> <span class='va'>did_simulated</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Event Study: imputation method. Dep. Var.:  y 
+#&gt; Counterfactual model:  y ~ 0 | i + t 
+#&gt; Observations: 1500 
+#&gt;      Estimate Std. Error  t value    Pr(&gt;|t|))
+#&gt; k::0 0.973520 0.09719356 10.01630 1.292486e-23
+#&gt; k::1 2.085544 0.10992597 18.97226 2.892152e-80
+#&gt; k::2 2.990625 0.14310200 20.89856 5.518751e-97
+#&gt;  ...... -2  rows not shown.</div><div class='input'>
+<span class='co'># Return only point estimates</span>
+<span class='fu'>didImputation</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>|</span> <span class='va'>i</span> <span class='op'>+</span> <span class='va'>t</span>,
+              cohort <span class='op'>=</span> <span class='st'>'g'</span>,
+              with.se <span class='op'>=</span> <span class='cn'>FALSE</span>,
+              data <span class='op'>=</span> <span class='va'>did_simulated</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Event Study: imputation method. Dep. Var.:  y 
+#&gt; Counterfactual model:  y ~ 0 | i + t 
+#&gt; Observations: 1500 
+#&gt;      Estimate Std. Error t value Pr(&gt;|t|))
+#&gt; k::0 0.973520         NA      NA        NA
+#&gt; k::1 2.085544         NA      NA        NA
+#&gt; k::2 2.990625         NA      NA        NA
+#&gt; k::3 3.980677         NA      NA        NA
+#&gt; k::4 4.774795         NA      NA        NA
+#&gt;  ...... 4  rows not shown.</div><div class='input'>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

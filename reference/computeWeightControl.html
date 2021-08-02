@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="One iteration of weight — computeWeightControl" />
-<meta property="og:description" content="This is the workhorse of the method" />
+<meta property="og:description" content="Single iteration of weight demean w.r.t. continuous control." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didImputation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
       </span>
     </div>
 
@@ -129,12 +129,35 @@
     </div>
 
     <div class="ref-description">
-    <p>This is the workhorse of the method</p>
+    <p>Single iteration of weight demean w.r.t. continuous control.</p>
     </div>
 
     <pre class="usage"><span class='fu'>computeWeightControl</span><span class='op'>(</span><span class='va'>dt</span>, <span class='va'>w_i</span>, <span class='va'>denom</span>, <span class='va'>c</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>dt</th>
+      <td><p>data.table.</p></td>
+    </tr>
+    <tr>
+      <th>w_i</th>
+      <td><p>Character. Weight to demean.</p></td>
+    </tr>
+    <tr>
+      <th>denom</th>
+      <td><p>Numeric. Relative size of untreated population.</p></td>
+    </tr>
+    <tr>
+      <th>c</th>
+      <td><p>Character. Name of the control to demean on.</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Void. Mutate the weight vector in the original data.table.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

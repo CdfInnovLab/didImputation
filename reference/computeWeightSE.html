@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Imputation estimation. — runImputation • didImputation</title>
+<title>Weight specific standard error — computeWeightSE • didImputation</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Imputation estimation. — runImputation" />
-<meta property="og:description" content="Imputation estimation." />
+<meta property="og:title" content="Weight specific standard error — computeWeightSE" />
+<meta property="og:description" content="Weight specific standard error" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -123,33 +123,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Imputation estimation.</h1>
+    <h1>Weight specific standard error</h1>
     
-    <div class="hidden name"><code>runImputation.Rd</code></div>
+    <div class="hidden name"><code>computeWeightSE.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Imputation estimation.</p>
+    <p>Weight specific standard error</p>
     </div>
 
-    <pre class="usage"><span class='fu'>runImputation</span><span class='op'>(</span><span class='va'>s</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>computeWeightSE</span><span class='op'>(</span><span class='va'>w_i</span>, <span class='va'>dt</span>, <span class='va'>s</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>w_i</th>
+      <td><p>Character. Name of the weight.</p></td>
+    </tr>
+    <tr>
+      <th>dt</th>
+      <td><p>data.table. Estimation table.</p></td>
+    </tr>
+    <tr>
       <th>s</th>
-      <td><p>an object of class "didImputation"</p></td>
+      <td><p>Object of class "didImputation".</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments.</p></td>
+      <td><p>other arguments.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>an object of class "didImputation" mutated with imputed values.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
