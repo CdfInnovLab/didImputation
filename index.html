@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Staggered differences-in-differences estimation • didImputation</title>
+<title>Staggered difference-in-differences estimation • didImputation</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -17,8 +17,8 @@
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Staggered differences-in-differences estimation">
-<meta property="og:description" content="Set of functions to estimate, report and visualize results in staggered differences-in-differences (DiD) setup using the imputation approach of Borusyak, Jaravel, and Spiess (2021). The standard DiD setup involves two periods and two groups (one treated and one untreated), it relies on parallel trend assumption to estimate the treatment effect of the treated. The staggered DiD setup is the generalization of this approach to multiple periods and multiple groups (i.e. individuals treated at different time periods.). Recent literature stress out the need to not use the standard two-way fixed effect (TWFE) regression to estimate those models. This package implements a method of imputation to estimate the average treatment effect. The package uses untreated observations to predict the counterfactual outcome on treated observations and provide the appropriate Standard errors. It provides ways to test for parallel trends.  ">
+<script src="pkgdown.js"></script><meta property="og:title" content="Staggered difference-in-differences estimation">
+<meta property="og:description" content="Set of functions to estimate, report and visualize results in staggered difference-in-differences (DiD) setup using the imputation approach of Borusyak, Jaravel, and Spiess (2021). The standard DiD setup involves two periods and two groups (one treated and one untreated), it relies on parallel trend assumption to estimate the treatment effect of the treated. The staggered DiD setup is the generalization of this approach to multiple periods and multiple groups (i.e. individuals treated at different time periods.). Recent literature stress out the need to not use the standard two-way fixed effect (TWFE) regression to estimate those models. This package implements a method of imputation to estimate the average treatment effect. The package uses untreated observations to predict the counterfactual outcome on treated observations and provide the appropriate Standard errors. It provides ways to test for parallel trends.  ">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -85,18 +85,20 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <p><img src="reference/figures/logo.png" width="150px" align="right"></p>
 <!-- badges: start -->
-<p><a href="https://github.com/CdfInnovLab/didimputation/actions"><img src="https://github.com/cdfInnovLab/didimputation/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></p>
-<p><a href="https://codecov.io/gh/CdfInnovLab/didImputation?branch=master"><img src="https://codecov.io/gh/CdfInnovLab/didImputation/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></p>
-<p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></p>
-<p><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/badge/devel%20version-0.0.1.0-blue.svg"></a></p>
-<p><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/github/languages/code-size/CdfInnovLab/didImputation.svg"></a> <!-- badges: end --></p>
-<p>Estimation of staggered Differences-in-Differences using the imputation approach of Borusyak, Jaravel, and Spiess (2021). The packages allows for:</p>
+
+
+
+
+
+<!-- badges: end -->
+<p>Estimation of staggered Difference-in-Differences using the imputation approach of Borusyak, Jaravel, and Spiess (2021). The packages allows for:</p>
 <ul>
 <li><p>Multiple time periods</p></li>
 <li><p>Staggered design (i.e., units are treated at different time periods)</p></li>
 <li><p>Continuous controls</p></li>
 </ul>
-<p>The package implements an imputation method to estimate the treatment effect and pre-trend testing in differences-in-differences designs with staggered adoption (i.e where units are treated at different time periods). Recent literature stress out the importance of not using the standard <em>twoway fixed effect</em> regression</p>
+<p>The package implements an imputation method to estimate the treatment effect and pre-trend testing in difference-in-differences designs with staggered adoption (i.e where units are treated at different time periods). Recent literature stress out the importance of not using the standard <em>twoway fixed effect</em> regression.</p>
+<p>The standard DiD setup involves two periods and two groups (one treated and one untreated), it relies on parallel trend assumption to estimate the treatment effect of the treated. The staggered DiD setup is the generalization of this approach to multiple periods and multiple groups (i.e. individuals treated at different time periods.). Recent literature stress out the need to not use the standard two-way fixed effect (TWFE) regression to estimate those models. This package implements a method of imputation to estimate the average treatment effect. The package uses untreated observations to predict the counterfactual outcome on treated observations and provide the appropriate Standard errors. It provides ways to test for parallel trends.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -192,7 +194,17 @@ Custom cluster</li>
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/CdfInnovLab/didimputation/actions"><img src="https://github.com/cdfInnovLab/didimputation/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/CdfInnovLab/didImputation?branch=master"><img src="https://codecov.io/gh/CdfInnovLab/didImputation/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/badge/devel%20version-0.0.1.0-blue.svg"></a></li>
+<li><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/github/languages/code-size/CdfInnovLab/didImputation.svg"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
