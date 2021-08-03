@@ -1,6 +1,8 @@
 ---
-output: github_document
 title: Did Imputation
+output:
+  github_document:
+    pandoc_args: --webtex
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -44,6 +46,7 @@ the importance of not using the standard _twoway fixed effect_ regression.
 
 The standard DiD setup involves two periods and two groups (one treated and one untreated), it relies on parallel trend assumption to estimate the treatment effect of the treated. The staggered DiD setup is the generalization of this approach to multiple periods and multiple groups (i.e. individuals treated at different time periods.). Recent literature stress out the need to not use the standard two-way fixed effect (TWFE) regression to estimate those models. This package implements a method of imputation to estimate the average treatment effect. The package uses untreated observations to predict the counterfactual outcome on treated observations and provide the appropriate Standard errors. It provides ways to test for parallel trends.
 
+
 ## Installation
 You can install the github version with `devtools` or `renv`(recommended, [read more about renv](https://rstudio.github.io/renv/articles/renv.html))
 
@@ -69,9 +72,33 @@ summary(res)
 
 
 You can print the result easily with `didplot`
-```{r pressure, echo = FALSE}
+```{r plot}
 didplot(res)
 ```
+
+
+# How it works
+
+didImputation estimates the effects of a binary treatment with staggered timing.
+It allows for arbitrary heterogeneity of treatment and dynamic effects.
+
+The estimation is a three step procedures
+
+1. **Estimate** a linear model on non treated observations only (it \in $\Omega_0$) (either not-yet-treated or never-treated).
+$$Y_{it}(0|it \in \Omega_0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}$$
+2. **Impute** the treated observations ($it \in \Omega_1$) potential outcome $Y_{it}(0)$
+and obtain treatment effect $\tau_{it}$ by substracting the predicted outcome from step 1
+$$
+\begin{align*}
+\hat{Y}_{it}(0|it \in \Omega_1) &= \hat{\alpha}_i + \hat{\beta}_t + X_{it}'\hat{\delta} \\
+\hat{\tau}_{it} &= Y_{it} - \hat{Y}_{it}(0)
+\end{align*}
+$$
+
+3. **Average** estimated treatment effects $\tau_{it}$ to the estimand of interest.
+
+    > For the overall average treatment effect, the estimate is defined by
+      $$\hat{\tau} = \sum_{it \in \Omega_1} \tau_{it}$$
 
 # TODO
 
@@ -81,7 +108,11 @@ didplot(res)
 - [ ] Time invariant controls
 - [ ] Unit invariant controls
 - [ ] Custom cluster
-
+- [ ] Latex export
+- [ ] Allow custom period length
+- [ ] Automatic panel balance
+- [ ] Interactions in fixed effects
+- [ ] Allow weights reuse
 
 ## Reference
 [Borusyak, K., Jaravel, X., & Spiess, J. (2021). Revisiting event study designs: Robust and efficient estimation. Working paper.](https://www.google.com/url?q=https%3A%2F%2Fwww.dropbox.com%2Fs%2F0o79nppmve792nf%2Fborusyak_hull_jan21.pdf%3Fraw%3D1&sa=D&sntz=1&usg=AFQjCNE2vdSXDowNFgVeRfpaUacGMQop-A)
