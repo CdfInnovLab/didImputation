@@ -30,8 +30,13 @@ runImputation <- function(s, ...) {
 
   # predict counterfactual outcome
   data <- data[d == 0, eps := resid(model)]
-  counterfactual <- predict(model, newdata = treated)
-  data <- data[d == 1, cf := counterfactual]
+  potential_outcome <- purrr::quietly(predict)(model, newdata = treated)
+
+  if (isTRUE(grepl('not regular', potential_outcome$messages))) {
+    stop("Error: Cannot predict potential outcome because fixed-effects are not regular. You can try with less fixed-effects (if that is possible), or use a balanced panel.")
+  }
+
+  data <- data[d == 1, cf := potential_outcome$result]
   ndata <- nrow(data)
   data <- data[d == 0 | !is.na(cf)]
 
