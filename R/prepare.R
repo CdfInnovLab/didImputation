@@ -9,13 +9,25 @@
 #' @param s A list with the arguments to didImputation.
 #'
 #' @import data.table
-#' @importFrom collapse fmin fmax
+#' @importFrom collapse fmin fmax fsum
+#' @importFrom stats na.omit
 #' @return Augmented list with configured arguments.
 #'
 prepare <- function(s) {
   k <- NULL
   # Check if data table
   s$data <- if (!is.data.table(s$data)) setDT(s$data) else s$data
+
+
+  # Normalize weights
+  if (!is.null(s$w)) {
+    if (s$w %in% names(s$data)) {
+      s$w <- s$data[[s$w]]
+    }
+    s$data$wei <- (s$w / collapse::fsum(s$w)) * length(na.omit(s$w))
+  } else {
+    s$data$wei <- 1
+  }
 
   if (is.null(s$unit)) {
     s$unit <- s$fes[1]

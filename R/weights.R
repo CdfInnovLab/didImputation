@@ -24,8 +24,6 @@ computeWeights <- function(s, ...) {
 
   dt <- s$data
 
-  dt[, wei := 1] # By default each obs is weighted by 1. Must now allow for user weights
-
   dt[d == 1, w1 := 1 / .N, by = k]
 
   dt[, s$weights_cols := 0]

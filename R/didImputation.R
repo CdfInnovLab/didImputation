@@ -10,7 +10,7 @@
 #' @param coef R Expression of leads and lags (eg `coef = -5:8`). By default estimates whole dynamic effect. See Details.
 #' @param data A data frame or data.table
 #' @param cohort Character. Time of treatment identifier. By default it expect `Inf` for never treated units. You can override this with `nevertreated.value`
-#' @param w (not yet implemented) Numerical or Variable name. Default is `NULL`. Estimation weights
+#' @param w Numerical vector or Variable name. Default is `NULL`. Sample weights.
 #' @param OATT Logical, default is `FALSE`. If `TRUE` then the overall average treatment effect is computed instead of ATT at each horizon.
 #' @param unit Character, default is `NULL`. Unit identifier. If `NULL`, it default to the first fixed effect.
 #' @param time Character, default is `NULL`. Time period identifier. If `NULL`, it default to the second fixed effect.
@@ -149,6 +149,7 @@ didImputation <- function(y0,
     time = time,
     cohort = cohort,
     unit = unit,
+    w = w,
     y0 = y0,
     y = y0[[2]],
     fes = parseFEs(y0),
