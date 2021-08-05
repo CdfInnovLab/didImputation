@@ -72,7 +72,7 @@ parseControls <- function(f, ...) {
 #'
 #' The default data generating process is:
 #'
-#' `y ~ a + b + 2*x1 + d * (k + 1) + e`
+#' `y ~ a + b + hdfe + 2*x1 + d * (k + 1) + e`
 #'
 #' Variable description is available in previous section.
 #'
@@ -97,7 +97,8 @@ parseControls <- function(f, ...) {
 #' @export
 #'
 #' @examples
-#' generateDidData(100,10)
+#' dt <- generateDidData(100,10)
+#' head(dt)
 #'
 generateDidData <- function(i,
                             t,

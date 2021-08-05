@@ -69,12 +69,13 @@ User has access to the following hidden variables:
 
 The default data generating process is:
 
-\code{y ~ a + b + 2*x1 + d * (k + 1) + e}
+\code{y ~ a + b + hdfe + 2*x1 + d * (k + 1) + e}
 
 Variable description is available in previous section.
 }
 
 \examples{
-generateDidData(100,10)
+dt <- generateDidData(100,10)
+head(dt)
 
 }
