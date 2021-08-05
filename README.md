@@ -15,7 +15,7 @@ coverage](https://codecov.io/gh/CdfInnovLab/didImputation/branch/master/graph/ba
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
-[![](https://img.shields.io/badge/devel%20version-0.0.2.0-blue.svg)](https://github.com/CdfInnovLab/didImputation)
+[![](https://img.shields.io/badge/devel%20version-0.0.2-blue.svg)](https://github.com/CdfInnovLab/didImputation)
 
 [![](https://img.shields.io/github/languages/code-size/CdfInnovLab/didImputation.svg)](https://github.com/CdfInnovLab/didImputation)
 
@@ -114,7 +114,7 @@ The estimation is a three step procedures
     ![\\Omega\_0](https://latex.codecogs.com/png.latex?%5COmega_0 "\Omega_0"))
     (either not-yet-treated or never-treated).
 
-    ![Y\_{it}(0\|d=0) = \\alpha\_i + \\beta\_t + X\_{it}'\\delta + \\varepsilon\_{it}](https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%7Cd%3D0%29%20%3D%20%5Calpha_i%20%2B%20%5Cbeta_t%20%2B%20X_%7Bit%7D%27%5Cdelta%20%2B%20%5Cvarepsilon_%7Bit%7D "Y_{it}(0|d=0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}")
+    ![Y\_{it}(0\|it \\in \\Omega\_0) = \\alpha\_i + \\beta\_t + X\_{it}'\\delta + \\varepsilon\_{it}](https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_0%29%20%3D%20%5Calpha_i%20%2B%20%5Cbeta_t%20%2B%20X_%7Bit%7D%27%5Cdelta%20%2B%20%5Cvarepsilon_%7Bit%7D "Y_{it}(0|it \in \Omega_0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}")
 
 2.  **Impute** the treated observations
     (![it \\in \\Omega\_1](https://latex.codecogs.com/png.latex?it%20%5Cin%20%5COmega_1 "it \in \Omega_1"))
@@ -126,12 +126,12 @@ The estimation is a three step procedures
 
     ![
     \\begin{align\*}
-    \\hat{Y}\_{it}(0\|d=1) &= \\hat{\\alpha}\_i + \\hat{\\beta}\_t + X\_{it}'\\hat{\\delta} \\\\
+    \\hat{Y}\_{it}(0\|it \\in \\Omega\_1) &= \\hat{\\alpha}\_i + \\hat{\\beta}\_t + X\_{it}'\\hat{\\delta} \\\\
     \\hat{\\tau}\_{it} &= Y\_{it} - \\hat{Y}\_{it}(0)
     \\end{align\*}
-    ](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign%2A%7D%0A%5Chat%7BY%7D_%7Bit%7D%280%7Cd%3D1%29%20%26%3D%20%5Chat%7B%5Calpha%7D_i%20%2B%20%5Chat%7B%5Cbeta%7D_t%20%2B%20X_%7Bit%7D%27%5Chat%7B%5Cdelta%7D%20%5C%5C%0A%5Chat%7B%5Ctau%7D_%7Bit%7D%20%26%3D%20Y_%7Bit%7D%20-%20%5Chat%7BY%7D_%7Bit%7D%280%29%0A%5Cend%7Balign%2A%7D%0A "
+    ](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign%2A%7D%0A%5Chat%7BY%7D_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_1%29%20%26%3D%20%5Chat%7B%5Calpha%7D_i%20%2B%20%5Chat%7B%5Cbeta%7D_t%20%2B%20X_%7Bit%7D%27%5Chat%7B%5Cdelta%7D%20%5C%5C%0A%5Chat%7B%5Ctau%7D_%7Bit%7D%20%26%3D%20Y_%7Bit%7D%20-%20%5Chat%7BY%7D_%7Bit%7D%280%29%0A%5Cend%7Balign%2A%7D%0A "
     \begin{align*}
-    \hat{Y}_{it}(0|d=1) &= \hat{\alpha}_i + \hat{\beta}_t + X_{it}'\hat{\delta} \\
+    \hat{Y}_{it}(0|it \in \Omega_1) &= \hat{\alpha}_i + \hat{\beta}_t + X_{it}'\hat{\delta} \\
     \hat{\tau}_{it} &= Y_{it} - \hat{Y}_{it}(0)
     \end{align*}
     ")
@@ -147,7 +147,7 @@ The estimation is a three step procedures
 
 # TODO
 
--   [ ] Estimation weights
+-   [x] Estimation weights
 -   [ ] Triple differences
 -   [ ] Vignette
 -   [ ] Time invariant controls

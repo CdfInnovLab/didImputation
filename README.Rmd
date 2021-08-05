@@ -102,7 +102,7 @@ $$
 
 # TODO
 
-- [ ] Estimation weights
+- [x] Estimation weights
 - [ ] Triple differences
 - [ ] Vignette
 - [ ] Time invariant controls
