@@ -145,7 +145,6 @@ didImputation <- function(y0,
 
   # Configuration
   s <- list(
-    data = if (mutatedata) data else copy(data),
     time = time,
     cohort = cohort,
     unit = unit,
@@ -154,16 +153,20 @@ didImputation <- function(y0,
     y = y0[[2]],
     fes = parseFEs(y0),
     coef = enexpr(coef),
-    tol = tol,
     maxit = maxit,
     with.se = with.se,
     verbose = verbose,
     OATT = OATT,
+    tol = tol,
     effective.sample = effective.sample,
     nevertreated.value = nevertreated.value
   )
 
   s$controls <- parseControls(s$y0)
+
+  # Load data
+  s$data <- if (mutatedata) data else copy(subsetData(data, s))
+
   class(s) <- "didImputation"
 
   # Prepare the data used for estimation

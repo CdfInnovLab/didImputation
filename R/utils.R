@@ -18,6 +18,24 @@ parseFEs <- function(f, ...) {
 }
 
 
+#' Subset data according to function aarguments
+#'
+#' @param data A data frame.
+#' @param s A list containing model parameters.
+#'
+#' @return A data frame.
+#'
+subsetData <- function(data, s){
+  vars_to_keep <- c(all.vars(s$y0), s$time, s$cohort, s$unit)
+  if( is.character(s$w) ) {
+    vars_to_keep <- c(vars_to_keep, s$w)
+  }
+  vars_to_keep <- unique(vars_to_keep)
+
+  return(subset(data, select = vars_to_keep))
+}
+
+
 #' Parse control variables
 #'
 #' @param f Formula.
