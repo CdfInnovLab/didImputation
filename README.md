@@ -111,30 +111,26 @@ effects.
 The estimation is a three step procedures
 
 1.  **Estimate** a linear model on non treated observations only (it
-    ![\\Omega\_0](https://latex.codecogs.com/png.latex?%5COmega_0 "\Omega_0"))
+    ![\\Omega_0](https://latex.codecogs.com/png.latex?%5COmega_0 "\Omega_0"))
     (either not-yet-treated or never-treated).
 
-    ![Y\_{it}(0\|it \\in \\Omega\_0) = \\alpha\_i + \\beta\_t + X\_{it}'\\delta + \\varepsilon\_{it}](https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_0%29%20%3D%20%5Calpha_i%20%2B%20%5Cbeta_t%20%2B%20X_%7Bit%7D%27%5Cdelta%20%2B%20%5Cvarepsilon_%7Bit%7D "Y_{it}(0|it \in \Omega_0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}")
+    ![Y\_{it}(0\|it \\in \\Omega_0) = \\alpha_i + \\beta_t + X\_{it}'\\delta + \\varepsilon\_{it}](https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_0%29%20%3D%20%5Calpha_i%20%2B%20%5Cbeta_t%20%2B%20X_%7Bit%7D%27%5Cdelta%20%2B%20%5Cvarepsilon_%7Bit%7D "Y_{it}(0|it \in \Omega_0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}")
 
 2.  **Impute** the treated observations
-    (![it \\in \\Omega\_1](https://latex.codecogs.com/png.latex?it%20%5Cin%20%5COmega_1 "it \in \Omega_1"))
+    (![it \\in \\Omega_1](https://latex.codecogs.com/png.latex?it%20%5Cin%20%5COmega_1 "it \in \Omega_1"))
     potential outcome
     ![Y\_{it}(0)](https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%29 "Y_{it}(0)")
     and obtain treatment effect
     ![\\tau\_{it}](https://latex.codecogs.com/png.latex?%5Ctau_%7Bit%7D "\tau_{it}")
     by substracting the predicted outcome from step 1
 
-    ![
-    \\begin{align\*}
-    \\hat{Y}\_{it}(0\|it \\in \\Omega\_1) &= \\hat{\\alpha}\_i + \\hat{\\beta}\_t + X\_{it}'\\hat{\\delta} \\\\
+    ![\\begin{align\*}
+    \\hat{Y}\_{it}(0\|it \\in \\Omega_1) &= \\hat{\\alpha}\_i + \\hat{\\beta}\_t + X\_{it}'\\hat{\\delta} \\\\
     \\hat{\\tau}\_{it} &= Y\_{it} - \\hat{Y}\_{it}(0)
-    \\end{align\*}
-    ](https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Balign%2A%7D%0A%5Chat%7BY%7D_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_1%29%20%26%3D%20%5Chat%7B%5Calpha%7D_i%20%2B%20%5Chat%7B%5Cbeta%7D_t%20%2B%20X_%7Bit%7D%27%5Chat%7B%5Cdelta%7D%20%5C%5C%0A%5Chat%7B%5Ctau%7D_%7Bit%7D%20%26%3D%20Y_%7Bit%7D%20-%20%5Chat%7BY%7D_%7Bit%7D%280%29%0A%5Cend%7Balign%2A%7D%0A "
-    \begin{align*}
+    \\end{align\*}](https://latex.codecogs.com/png.latex?%5Cbegin%7Balign%2A%7D%0A%5Chat%7BY%7D_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_1%29%20%26%3D%20%5Chat%7B%5Calpha%7D_i%20%2B%20%5Chat%7B%5Cbeta%7D_t%20%2B%20X_%7Bit%7D%27%5Chat%7B%5Cdelta%7D%20%5C%5C%0A%5Chat%7B%5Ctau%7D_%7Bit%7D%20%26%3D%20Y_%7Bit%7D%20-%20%5Chat%7BY%7D_%7Bit%7D%280%29%0A%5Cend%7Balign%2A%7D "\begin{align*}
     \hat{Y}_{it}(0|it \in \Omega_1) &= \hat{\alpha}_i + \hat{\beta}_t + X_{it}'\hat{\delta} \\
     \hat{\tau}_{it} &= Y_{it} - \hat{Y}_{it}(0)
-    \end{align*}
-    ")
+    \end{align*}")
 
 3.  **Average** estimated treatment effects
     ![\\tau\_{it}](https://latex.codecogs.com/png.latex?%5Ctau_%7Bit%7D "\tau_{it}")
@@ -143,13 +139,13 @@ The estimation is a three step procedures
     > For the overall average treatment effect, the estimate is defined
     > by
     >
-    > ![\\hat{\\tau} = \\sum\_{it \\in \\Omega\_1} \\tau\_{it}](https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctau%7D%20%3D%20%5Csum_%7Bit%20%5Cin%20%5COmega_1%7D%20%5Ctau_%7Bit%7D "\hat{\tau} = \sum_{it \in \Omega_1} \tau_{it}")
+    > ![\\hat{\\tau} = \\sum\_{it \\in \\Omega_1} \\tau\_{it}](https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctau%7D%20%3D%20%5Csum_%7Bit%20%5Cin%20%5COmega_1%7D%20%5Ctau_%7Bit%7D "\hat{\tau} = \sum_{it \in \Omega_1} \tau_{it}")
 
 # TODO
 
 -   [x] Estimation weights
--   [ ] Triple differences
--   [ ] Vignette
+-   [x] Triple differences
+-   [x] Vignette
 -   [ ] Time invariant controls
 -   [ ] Unit invariant controls
 -   [ ] Custom cluster

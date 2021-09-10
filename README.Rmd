@@ -88,12 +88,10 @@ The estimation is a three step procedures
 $$Y_{it}(0|it \in \Omega_0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}$$
 2. **Impute** the treated observations ($it \in \Omega_1$) potential outcome $Y_{it}(0)$
 and obtain treatment effect $\tau_{it}$ by substracting the predicted outcome from step 1
-$$
-\begin{align*}
+$$\begin{align*}
 \hat{Y}_{it}(0|it \in \Omega_1) &= \hat{\alpha}_i + \hat{\beta}_t + X_{it}'\hat{\delta} \\
 \hat{\tau}_{it} &= Y_{it} - \hat{Y}_{it}(0)
-\end{align*}
-$$
+\end{align*}$$
 
 3. **Average** estimated treatment effects $\tau_{it}$ to the estimand of interest.
 
@@ -103,8 +101,8 @@ $$
 # TODO
 
 - [x] Estimation weights
-- [ ] Triple differences
-- [ ] Vignette
+- [x] Triple differences
+- [x] Vignette
 - [ ] Time invariant controls
 - [ ] Unit invariant controls
 - [ ] Custom cluster

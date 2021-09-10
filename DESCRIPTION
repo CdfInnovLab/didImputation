@@ -14,6 +14,7 @@ Description: Set of functions to estimate, report and visualize results in stagg
 Depends:
     R (>= 3.5),
 License: MIT + file LICENSE
+URL: https://github.com/CdfInnovLab/didImputation
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -25,7 +26,6 @@ Suggests:
     testthat (>= 3.0.0),
     covr,
     badger,
-    cowplot,
 Config/testthat/edition: 3
 Imports: 
     data.table,
