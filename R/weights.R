@@ -17,42 +17,42 @@
 #'
 computeWeights <- function(s, ...) {
   # Must declare NSE variables to avoid CRAN Check error
-  wei <- NULL
-  k <- NULL
-  w1 <- NULL
-  guess <- NULL
+  .wei <- NULL
+  .k <- NULL
+  .w1 <- NULL
+  .guess <- NULL
 
   dt <- s$data
 
-  dt[, wei := 1] # By default each obs is weighted by 1. Must now allow for user weights
+  dt[, .wei := 1] # By default each obs is weighted by 1. Must now allow for user weights
 
-  dt[d == 1, w1 := 1 / .N, by = eval(s$by)]
+  dt[.d == 1, .w1 := 1 / .N, by = eval(s$by)]
 
   dt[, s$weights_cols := 0]
 
   # Compute the denominator, which is the fraction of
   # untreated obs in each dimensions
   computeDenomFe <- function(fe) {
-    dt[d == 0, paste0("denom_", fe) := sum(wei), by = c(fe)]
+    dt[.d == 0, paste0(".denom_", fe) := sum(.wei), by = c(fe)]
   }
 
   computeDenomControl <- function(c, cname) {
-    cmean <- eval(expr(dt[d == 0, fmean(!!c, w = wei)]))
+    cmean <- eval(expr(dt[.d == 0, fmean(!!c, w = .wei)]))
 
-    eval(expr(dt[, paste0("dm_", cname) := !!c - cmean])) # demeaned control
+    eval(expr(dt[, paste0(".dm_", cname) := !!c - cmean])) # demeaned control
     # return the denominator, it is a scalar
     return(
-      dt[d == 0, fsum(wei * get(paste0("dm_", cname))^2)]
+      dt[.d == 0, fsum(.wei * get(paste0(".dm_", cname))^2)]
     )
   }
 
   # Initialize the weights
   initweight <- function(w_i, .i, .j) {
-    w1 <- NULL
+    .w1 <- NULL
     if(is.na(.j)){
-      dt[k == .i, paste0(w_i) := w1]
+      dt[.k == .i, paste0(w_i) := .w1]
     } else {
-      dt[k == .i & eval(as.name(s$td)) == .j, paste0(w_i) := w1]
+      dt[.k == .i & eval(as.name(s$td)) == .j, paste0(w_i) := .w1]
     }
   }
 
@@ -89,8 +89,8 @@ computeWeights <- function(s, ...) {
   # Smart guess, may be smarter in the futur
   for (w in s$weights_cols) {
     .e <- environment()
-    dt[, guess := demean(dt[[w]], dt[, .SD, .SDcols = .e$s$fes])]
-    dt[d == 0, paste0(w) := guess]
+    dt[, .guess := demean(dt[[w]], dt[, .SD, .SDcols = .e$s$fes])]
+    dt[.d == 0, paste0(w) := .guess]
   }
 
   # Compute weights
@@ -111,8 +111,8 @@ computeWeights <- function(s, ...) {
 }
 
 hasEffectiveSample <- function(wi, dt, hhi) {
-  wei <- NULL
-  dt[d == 1, fsum(abs(get(wi))^2, w = wei)] <= hhi
+  .wei <- NULL
+  dt[.d == 1, fsum(abs(get(wi))^2, w = .wei)] <= hhi
 }
 
 
@@ -130,13 +130,13 @@ iterateWeight <- function(params, dt, i, w) {
 
   # Compute weights wrt fixed effects
   for (fe in params$fes) {
-    computeWeightFe(dt, w, paste0("denom_", fe), fe)
+    computeWeightFe(dt, w, paste0(".denom_", fe), fe)
   }
 
   # Compute weights wrt controls
   for (c in params$controls) {
     cname <- deparse(c)
-    computeWeightControl(dt, w, params$denom_c[[cname]], paste0("dm_", cname))
+    computeWeightControl(dt, w, params$denom_c[[cname]], paste0(".dm_", cname))
   }
 
   # Compute fit statistic
@@ -177,11 +177,11 @@ iterateWeight <- function(params, dt, i, w) {
 #'
 computeWeightFe <- function(dt, w_i, denom, fe) {
   # w_i is equal to 1/.N for d==1 & k == i
-  # Create event study weights
-  sumw <- NULL
-  wei <- NULL
-  dt[, sumw := fsum(get(w_i), get(fe), wei, TRA = "replace_fill")]
-  dt[d == 0, (w_i) := get(w_i) - sumw / get(denom)]
+  .sumw <- NULL
+  .wei <- NULL
+
+  dt[, .sumw := fsum(get(w_i), get(fe), .wei, TRA = "replace_fill")]
+  dt[.d == 0, (w_i) := get(w_i) - .sumw / get(denom)]
 }
 
 #' One iteration of weight
@@ -200,10 +200,9 @@ computeWeightFe <- function(dt, w_i, denom, fe) {
 #'
 computeWeightControl <- function(dt, w_i, denom, c) {
   # w_i is equal to 1/.N for d==1 & k == i
-  # Create event study weights
-  sumw <- NULL
-  wei <- NULL
+  .sumw <- NULL
+  .wei <- NULL
 
-  dt[, sumw := fsum(get(w_i) * get(c), wei, TRA = "replace_fill")]
-  dt[d == 0, (w_i) := get(w_i) - sumw * get(c) / denom]
+  dt[, .sumw := fsum(get(w_i) * get(c), .wei, TRA = "replace_fill")]
+  dt[.d == 0, (w_i) := get(w_i) - .sumw * get(c) / denom]
 }

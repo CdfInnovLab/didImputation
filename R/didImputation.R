@@ -142,8 +142,8 @@ didImputation <- function(y0,
                           effective.sample = 30) {
 
   . <- NULL
-  tau <- NULL
-  k <- NULL
+  .tau <- NULL
+  .k <- NULL
 
   # Configuration
   s <- list(
@@ -176,10 +176,10 @@ didImputation <- function(y0,
     if(s$td == TRUE) {
       s$td <- parseFEs(s$y0)[3]
     }
-    s$by <- c('k', s$td)
+    s$by <- c('.k', s$td)
     s$ncontrasts <- nlevels(factor(s$data[[s$td]]))
   } else {
-    s$by <- 'k'
+    s$by <- '.k'
   }
 
   class(s) <- "didImputation"
@@ -191,11 +191,11 @@ didImputation <- function(y0,
   s <- runImputation(s)
 
   # Compute ATT by horizon and get labels
-  s$coefs <- s$data[d == 1, .(mean(tau)), by = eval(s$by)][k >= s$coef[[1]] & k <= s$coef[[2]]]
+  s$coefs <- s$data[.d == 1, .(mean(.tau)), by = eval(s$by)][.k >= s$coef[[1]] & .k <= s$coef[[2]]]
   if(s$ncontrasts == 1){
-    coeflabs <- paste0("k::", s$coefs$k)
+    coeflabs <- paste0("k::", s$coefs$.k)
   } else {
-    coeflabs <- paste0("k::", s$coefs$k, ":", s$td, "::", s$coefs[[s$td]])
+    coeflabs <- paste0("k::", s$coefs$.k, ":", s$td, "::", s$coefs[[s$td]])
   }
   s$coefs <- s$coefs$V1
   names(s$coefs) <- coeflabs
@@ -219,6 +219,7 @@ didImputation <- function(y0,
     pre_table <- as.data.frame(fixest::coeftable(s$pre_trends),
       check.names = FALSE
     )
+    row.names(pre_table) <- gsub("^\\.", "", row.names(pre_table))
     s$coeftable <- rbind(pre_table, s$coeftable)
   }
 

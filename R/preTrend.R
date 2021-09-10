@@ -20,9 +20,9 @@ preTrend <- function(s, ...) {
   leads <- s$coef[1]
 
   if(s$ncontrasts == 1) {
-    reg <- paste0("~ i(k,  keep = -1:leads ) + ")
+    reg <- paste0("~ i(.k,  keep = -1:leads ) + ")
   } else {
-    reg <- paste0("~ i(k, i.", s$td,", keep = -1:leads ) + ")
+    reg <- paste0("~ i(.k, i.", s$td,", keep = -1:leads ) + ")
   }
 
   pre_formula <- as.formula(gsub("~ ", reg, deparse(s$y0)))
@@ -30,7 +30,7 @@ preTrend <- function(s, ...) {
   # Run TWFE regression with leads on untreated observations.
   reg_pre <- fixest::feols(
     pre_formula,
-    s$data[d == 0]
+    s$data[.d == 0]
   )
 
   s$pre_trends <- reg_pre

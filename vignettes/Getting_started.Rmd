@@ -124,7 +124,7 @@ Additional fixed-effects can be directly included in the formula after the `|`. 
 
 ```{r}
 # generate data with hdfe
-data <- generateDidData(i = 10000,
+data <- generateDidData(i = 2000,
                         t = 6,
                         hdfe = TRUE,
                         control = FALSE,

@@ -24,6 +24,21 @@ test_that("Regression runs without errors", {
   expect_error(eval(basicReg), NA)
 })
 
+test_that("Estimation can include controls", {
+  dt <- didImputation::generateDidData(i = 500,
+                                          t = 5,
+                                          control = TRUE,
+                                          treatment = ~ d * (ig+1) * (k+1)
+  )
+
+  expect_error(didImputation(
+    y0 = y ~ x1 | i + t,
+    cohort = "g",
+    data = dt
+  ),
+  NA)
+})
+
 test_that("Regression on simulated data gives the right results", {
   res <- eval(basicReg)
 
@@ -95,9 +110,11 @@ test_that("methods execute without errors", {
 
 test_that("No name collision with internal variable", {
   did_simulated$s <- did_simulated$y
+  did_simulated$k <-  did_simulated$i
+  did_simulated$wei <- did_simulated$t
 
   collision_Reg <- rlang::expr(didImputation(
-    y0 = s ~ 0 | i + t,
+    y0 = s ~ 0 | k + wei,
     cohort = "g",
     data = did_simulated
   ))
