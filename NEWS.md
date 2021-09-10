@@ -1,3 +1,18 @@
+# didImputation 0.0.3 (2021-10-09)
+
+## Features
+
+* `didImputation` now supports triple difference estimation with `td` option.
+
+## Bugs
+
+* Rename internal variables to avoid conflict with user input.
+
+## Misc
+
+* Updated `README`.
+* A vignette is now available.
+
 # didImputation 0.0.2 (2021-08-05)
 
 ## Features
