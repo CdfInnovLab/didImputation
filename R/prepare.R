@@ -43,7 +43,7 @@ prepare <- function(s) {
 
   # create time to event variable
   # Only pre and post if OATT is true
-  s$data[, k := get(s$time) - get(s$cohort)]
+  s$data$k <- s$data[[s$time]] - s$data[[s$cohort]]
 
   if (s$OATT) {
     s$data[k >= 0, k := 0]
@@ -57,11 +57,16 @@ prepare <- function(s) {
   s$coef <- parseCoef(s$coef, s$OATT, s$data$k)
 
 
+  # Compute the amount of weights to compute
   s$nweights <- if (!s$OATT) s$coef[2] + 1 else 1
-  s$weights_cols <-
-    sapply(1:s$nweights, function(x) {
-      paste0("w_", x - 1)
-    })
+
+  if(s$ncontrasts == 1){
+    s$weights_cols <- paste0("w_", (1:s$nweights - 1))
+  } else {
+    weight_comb <- unique(s$data[k >= 0 & k <= eval(s$coef[2])][is.finite(k),
+                                                               .(k, eval(as.name(s$td)))])
+    s$weights_cols <- paste0("w_", weight_comb[[1]], "_", weight_comb[[2]])
+  }
 
   return(s)
 }

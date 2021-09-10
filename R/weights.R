@@ -24,14 +24,14 @@ computeWeights <- function(s, ...) {
 
   dt <- s$data
 
-  dt[d == 1, w1 := 1 / .N, by = k]
+  dt[, wei := 1] # By default each obs is weighted by 1. Must now allow for user weights
+
+  dt[d == 1, w1 := 1 / .N, by = eval(s$by)]
 
   dt[, s$weights_cols := 0]
 
   # Compute the denominator, which is the fraction of
   # untreated obs in each dimensions
-  # However, if I include that in the iteration
-  # it does not converge....
   computeDenomFe <- function(fe) {
     dt[d == 0, paste0("denom_", fe) := sum(wei), by = c(fe)]
   }
@@ -47,9 +47,13 @@ computeWeights <- function(s, ...) {
   }
 
   # Initialize the weights
-  initweight <- function(w_i, .i) {
+  initweight <- function(w_i, .i, .j) {
     w1 <- NULL
-    dt[k == .i, paste0(w_i) := w1]
+    if(is.na(.j)){
+      dt[k == .i, paste0(w_i) := w1]
+    } else {
+      dt[k == .i & eval(as.name(s$td)) == .j, paste0(w_i) := w1]
+    }
   }
 
 
@@ -65,8 +69,9 @@ computeWeights <- function(s, ...) {
   }
 
   # Initialize weights
-  for (i in 1:s$nweights) {
-    initweight(paste0("w_", i - 1), i - 1)
+  for (w_ij in s$weights_cols) {
+    contrasts <- unlist(strsplit(w_ij, "_"))[2:3]
+    initweight(w_ij, as.numeric(contrasts[1]), contrasts[2])
   }
 
   # Check if effective sample size is large enough
@@ -83,7 +88,8 @@ computeWeights <- function(s, ...) {
 
   # Smart guess, may be smarter in the futur
   for (w in s$weights_cols) {
-    dt[, guess := demean(dt[[w]], dt[, .SD, .SDcols = s$fes ])]
+    .e <- environment()
+    dt[, guess := demean(dt[[w]], dt[, .SD, .SDcols = .e$s$fes])]
     dt[d == 0, paste0(w) := guess]
   }
 

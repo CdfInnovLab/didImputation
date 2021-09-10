@@ -1,5 +1,9 @@
 data("did_simulated")
 base_stagg <- fixest::base_stagg
+dt_td <- didImputation::generateDidData(i = 1000,
+                       t = 5,
+                       treatment = ~ d * (ig+1) * (k+1)
+)
 
 basicReg <- rlang::expr(didImputation(
   y0 = y ~ 0 | i + t,
@@ -45,6 +49,16 @@ test_that("Estimate overall ATT", {
   )
 })
 
+
+test_that("Triple Difference runs without errors", {
+  est <- didImputation(y ~ 0 | i + t + ig,
+      data = dt_td,
+      td = T,
+      cohort = "g")
+
+  expect_length(est$coefs, 8)
+})
+
 test_that("User can set leads and lags", {
   reg <- rlang::duplicate(basicReg)
   reg$coef <- rlang::expr(-3:2)
@@ -77,6 +91,18 @@ test_that("methods execute without errors", {
   expect_error(invisible(print(res)), NA)
   expect_error(invisible(summary(res)), NA)
   expect_error(invisible(didplot(res)), NA)
+})
+
+test_that("No name collision with internal variable", {
+  did_simulated$s <- did_simulated$y
+
+  collision_Reg <- rlang::expr(didImputation(
+    y0 = s ~ 0 | i + t,
+    cohort = "g",
+    data = did_simulated
+  ))
+
+  expect_error(eval(collision_Reg), NA)
 })
 
 

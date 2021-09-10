@@ -14,6 +14,7 @@
 #' @param OATT Logical, default is `FALSE`. If `TRUE` then the overall average treatment effect is computed instead of ATT at each horizon.
 #' @param unit Character, default is `NULL`. Unit identifier. If `NULL`, it default to the first fixed effect.
 #' @param time Character, default is `NULL`. Time period identifier. If `NULL`, it default to the second fixed effect.
+#' @param td Logical or Character, default is `FALSE`. Triple difference estimation. If `TRUE`, the third fixed effect in `y0` will be interpreted as the additional group. If Character, then the corresponding column will be interpreted as the new group.
 #' @param nevertreated.value Any, default is `Inf`. Value encoding the cohort of never treated units.
 #' @param effective.sample Numeric, default is `30`. Effective sample size under which the function will throw a warning. See details.
 #' @param with.se Logical, default is `TRUE`. Should standard errors be reported
@@ -129,6 +130,7 @@ didImputation <- function(y0,
                           nevertreated.value = Inf,
                           unit = NULL,
                           time = NULL,
+                          td = FALSE,
                           w = NULL,
                           coef = -Inf:Inf,
                           OATT = FALSE,
@@ -151,6 +153,7 @@ didImputation <- function(y0,
     w = w,
     y0 = y0,
     y = y0[[2]],
+    td = td,
     fes = parseFEs(y0),
     coef = enexpr(coef),
     maxit = maxit,
@@ -159,6 +162,7 @@ didImputation <- function(y0,
     OATT = OATT,
     tol = tol,
     effective.sample = effective.sample,
+    ncontrasts = 1,
     nevertreated.value = nevertreated.value
   )
 
@@ -166,6 +170,17 @@ didImputation <- function(y0,
 
   # Load data
   s$data <- if (mutatedata) data else copy(subsetData(data, s))
+
+  # Coef level
+  if(s$td != FALSE){
+    if(s$td == TRUE) {
+      s$td <- parseFEs(s$y0)[3]
+    }
+    s$by <- c('k', s$td)
+    s$ncontrasts <- nlevels(factor(s$data[[s$td]]))
+  } else {
+    s$by <- 'k'
+  }
 
   class(s) <- "didImputation"
 
@@ -175,9 +190,15 @@ didImputation <- function(y0,
   # Impute counterfactual outcome
   s <- runImputation(s)
 
-  # Compute ATT by horizon
-  s$coefs <- s$data[d == 1, .(mean(tau)), by = k]$V1[1:(s$nweights)]
-  names(s$coefs) <- paste0("k::", 1:length(s$coefs) - 1)
+  # Compute ATT by horizon and get labels
+  s$coefs <- s$data[d == 1, .(mean(tau)), by = eval(s$by)][k >= s$coef[[1]] & k <= s$coef[[2]]]
+  if(s$ncontrasts == 1){
+    coeflabs <- paste0("k::", s$coefs$k)
+  } else {
+    coeflabs <- paste0("k::", s$coefs$k, ":", s$td, "::", s$coefs[[s$td]])
+  }
+  s$coefs <- s$coefs$V1
+  names(s$coefs) <- coeflabs
 
   if (s$with.se) {
     # Weights

@@ -11,6 +11,7 @@ didImputation(
   nevertreated.value = Inf,
   unit = NULL,
   time = NULL,
+  td = FALSE,
   w = NULL,
   coef = -Inf:Inf,
   OATT = FALSE,
@@ -34,6 +35,8 @@ didImputation(
 \item{unit}{Character, default is \code{NULL}. Unit identifier. If \code{NULL}, it default to the first fixed effect.}
 
 \item{time}{Character, default is \code{NULL}. Time period identifier. If \code{NULL}, it default to the second fixed effect.}
+
+\item{td}{Logical or Character, default is \code{FALSE}. Triple difference estimation. If \code{TRUE}, the third fixed effect in \code{y0} will be interpreted as the additional group. If Character, then the corresponding column will be interpreted as the new group.}
 
 \item{w}{Numerical vector or Variable name. Default is \code{NULL}. Sample weights.}
 

@@ -18,7 +18,7 @@ parseFEs <- function(f, ...) {
 }
 
 
-#' Subset data according to function aarguments
+#' Subset data according to function arguments
 #'
 #' @param data A data frame.
 #' @param s A list containing model parameters.
@@ -26,11 +26,11 @@ parseFEs <- function(f, ...) {
 #' @return A data frame.
 #'
 subsetData <- function(data, s){
-  vars_to_keep <- c(all.vars(s$y0), s$time, s$cohort, s$unit)
+  vars_to_keep <- list(all.vars(s$y0), s$time, s$cohort, s$unit, s$td)
   if( is.character(s$w) ) {
     vars_to_keep <- c(vars_to_keep, s$w)
   }
-  vars_to_keep <- unique(vars_to_keep)
+  vars_to_keep <- unlist(Filter(is.character, as.list(unique(vars_to_keep))))
 
   return(subset(data, select = vars_to_keep))
 }
@@ -70,6 +70,8 @@ parseControls <- function(f, ...) {
 #' @param control Logical. Should continuous control be added?
 #' @param attrition.rate Numerical. Default is 0. Probability of missing observation.
 #' @param treatment one sided formula, default is  ~ d * (k + 1). See details.
+#' @param ig an optional R expression, default is NULL. Will be evaluated to define a new variable which can be used
+#' in the treatment formula. By default, `ig` is `i %% 2`, that is a random unit invariant dummy variable.
 #'
 #'
 #' @section Treatment effect formula:
@@ -85,6 +87,7 @@ parseControls <- function(f, ...) {
 #' - `a`: Individual fixed effect
 #' - `b`: Time fixed effect
 #' - `t`: Calendar time
+#' - `ig`: a random unit invariant value in {0, 1, 2}. Can be used to define heterogeneous effect in triple difference.
 #'
 #' @section Default outcome:
 #'
@@ -123,7 +126,8 @@ generateDidData <- function(i,
                             hdfe = TRUE,
                             control = TRUE,
                             attrition.rate = 0,
-                            treatment = ~ d * (k + 1)
+                            treatment = ~ d * (k + 1),
+                            ig = NULL
                             ){
 
   N <- i*t
@@ -136,6 +140,9 @@ generateDidData <- function(i,
                    x1 = rnorm(N, sd = 2),
                    hdfe = sample(rnorm(i/50), N, replace = T),
                    e = rnorm(N, sd = 2))
+
+  # Group identifier
+  dt$ig <- if(is.null(ig)) dt$i %% 2 else eval(ig[[2]], envir = dt)
 
   # Naming hdfe
   dt$hdfefactor <- as.factor(dt$hdfe)

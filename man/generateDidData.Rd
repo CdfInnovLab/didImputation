@@ -10,7 +10,8 @@ generateDidData(
   hdfe = TRUE,
   control = TRUE,
   attrition.rate = 0,
-  treatment = ~d * (k + 1)
+  treatment = ~d * (k + 1),
+  ig = NULL
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ generateDidData(
 \item{attrition.rate}{Numerical. Default is 0. Probability of missing observation.}
 
 \item{treatment}{one sided formula, default is  ~ d * (k + 1). See details.}
+
+\item{ig}{an optional R expression, default is NULL. Will be evaluated to define a new variable which can be used
+in the treatment formula. By default, \code{ig} is \code{i \%\% 2}, that is a random unit invariant dummy variable.}
 }
 \value{
 a data.table with columns
@@ -61,6 +65,7 @@ User has access to the following hidden variables:
 \item \code{a}: Individual fixed effect
 \item \code{b}: Time fixed effect
 \item \code{t}: Calendar time
+\item \code{ig}: a random unit invariant value in {0, 1, 2}. Can be used to define heterogeneous effect in triple difference.
 }
 }
 

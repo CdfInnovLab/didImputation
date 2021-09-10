@@ -29,7 +29,7 @@ runImputation <- function(s, ...) {
   s$counterfactual <- model
 
   # predict counterfactual outcome
-  data <- data[d == 0, eps := resid(model)]
+  data <- data[d == 0, eps := resid(model, na.rm = FALSE)]
   potential_outcome <- purrr::quietly(predict)(model, newdata = treated)
 
   if (isTRUE(grepl('not regular', potential_outcome$messages))) {
@@ -46,7 +46,7 @@ runImputation <- function(s, ...) {
 
 
   # compute treatment effect by unit
-  data[, tau := get(s$y) - cf]
+  data$tau <- s$data[[s$y]] - s$data$cf
   s$data <- data
 
   return(s)

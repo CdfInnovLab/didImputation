@@ -25,6 +25,7 @@ Suggests:
     testthat (>= 3.0.0),
     covr,
     badger,
+    cowplot,
 Config/testthat/edition: 3
 Imports: 
     data.table,

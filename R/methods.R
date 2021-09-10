@@ -147,13 +147,32 @@ didplot <- function(object,
                     ci = 0.95,
                     ...) {
   with(object, {
-    coeftable$x <- as.numeric(
-      sapply(
-        strsplit(
-          rownames(coeftable), "::"
-        ), function(x) x[2]
+
+    # Extract timing (and group in case of triple difference)
+    if(object$ncontrast == 1) {
+      coeftable$x <- as.numeric(
+        sapply(
+          strsplit(
+            rownames(coeftable), "::"
+          ), function(x) x[2]
+        )
       )
-    )
+    } else {
+      coeftable$x <- as.numeric(
+        sapply(
+          strsplit(
+            rownames(coeftable), ":"
+          ), function(x) x[3]
+        )
+      )
+      coeftable$group <- as.factor(
+        sapply(
+          strsplit(
+            rownames(coeftable), ":"
+          ), function(x) x[6]
+        )
+      )
+    }
 
     q <- qnorm(ci + (1 - ci) / 2)
 
@@ -174,8 +193,13 @@ didplot <- function(object,
     }
 
 
+    if(ncontrasts == 1) {
+      p <- ggplot(coeftable, aes(x = x, y = Estimate))
+    } else {
+      p <- ggplot(coeftable, aes(x = x, y = Estimate, color = group))
+    }
 
-    p <- ggplot(coeftable, aes(x = x, y = Estimate)) +
+    p <- p +
       xlab("Time to treatment") +
       ylab(ylab) +
       scale_x_continuous(breaks = seq(min(coeftable$x, na.rm = T), max(coeftable$x, na.rm = T))) +
@@ -202,10 +226,17 @@ didplot <- function(object,
       p <- p +
         geom_hline(yintercept = 0, linetype = "solid") +
         geom_line() +
-        geom_ribbon(aes(
-          ymax = Estimate + `Std. Error` * q,
-          ymin = Estimate - `Std. Error` * q
-        ), linetype = 2, alpha = 0, colour = "black")
+        if(ncontrasts == 1){
+          geom_ribbon(aes(
+            ymax = Estimate + `Std. Error` * q,
+            ymin = Estimate - `Std. Error` * q,
+          ), linetype = 2, alpha = 0, colour = "black")
+        } else {
+          geom_ribbon(aes(
+            ymax = Estimate + `Std. Error` * q,
+            ymin = Estimate - `Std. Error` * q,
+          ), linetype = 2, alpha = 0)
+        }
     }
 
     return(p)
