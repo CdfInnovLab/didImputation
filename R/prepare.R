@@ -16,6 +16,7 @@
 prepare <- function(s) {
   .k <- NULL
   .d <- NULL
+  . <- NULL
   # Check if data table
   s$data <- if (!is.data.table(s$data)) setDT(s$data) else s$data
 

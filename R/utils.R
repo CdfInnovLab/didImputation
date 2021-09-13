@@ -70,8 +70,8 @@ parseControls <- function(f, ...) {
 #' @param control Logical. Should continuous control be added?
 #' @param attrition.rate Numerical. Default is 0. Probability of missing observation.
 #' @param treatment one sided formula, default is  ~ d * (k + 1). See details.
-#' @param ig an optional R expression, default is NULL. Will be evaluated to define a new variable which can be used
-#' in the treatment formula. By default, `ig` is `i %% 2`, that is a random unit invariant dummy variable.
+#' @param ig an optional one sided formula, default is `~ i %% 2`. Will be evaluated to define a new variable which can be used
+#' in the treatment formula. By default, `ig` is `~ i %% 2`, that is a random unit invariant dummy variable.
 #'
 #'
 #' @section Treatment effect formula:
@@ -127,7 +127,7 @@ generateDidData <- function(i,
                             control = TRUE,
                             attrition.rate = 0,
                             treatment = ~ d * (k + 1),
-                            ig = NULL
+                            ig = ~ i %% 2
                             ){
 
   N <- i*t
@@ -140,9 +140,6 @@ generateDidData <- function(i,
                    x1 = rnorm(N, sd = 2),
                    hdfe = sample(rnorm(i/50), N, replace = T),
                    e = rnorm(N, sd = 2))
-
-  # Group identifier
-  dt$ig <- if(is.null(ig)) dt$i %% 2 else eval(ig[[2]], envir = dt)
 
   # Naming hdfe
   dt$hdfefactor <- as.factor(dt$hdfe)
@@ -162,6 +159,9 @@ generateDidData <- function(i,
   dt$k[!is.finite(dt$k)] <- 0
 
   dt$y <- dt$e + dt$a + dt$b
+
+  # Group identifier
+  dt$ig <- eval(ig[[2]], envir = dt)
 
   #compute the true causal effect
   dt$trueffect <- eval(treatment[[2]], envir = dt)
