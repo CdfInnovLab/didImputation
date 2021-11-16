@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Parse control variables — parseControls • didImputation</title>
+<title>Changelog • didImputation</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,7 @@
 
 
 
-<meta property="og:title" content="Parse control variables — parseControls" />
-<meta property="og:description" content="Parse control variables" />
+<meta property="og:title" content="Changelog" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -67,7 +66,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -131,40 +130,73 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Parse control variables</h1>
-    <small class="dont-index">Source: <a href='https://github.com/CdfInnovLab/didImputation/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>parseControls.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/CdfInnovLab/didImputation/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Parse control variables</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>parseControls</span><span class='op'>(</span><span class='va'>f</span>, <span class='va'>...</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>f</th>
-      <td><p>Formula.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>additional arguments.</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>a vector of expressions.</p>
-
+    <div id="didimputation-003-2021-10-09" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.3">
+<a href="#didimputation-003-2021-10-09" class="anchor"></a>didImputation 0.0.3 (2021-10-09)</h1>
+<div id="features" class="section level2">
+<h2 class="hasAnchor">
+<a href="#features" class="anchor"></a>Features</h2>
+<ul>
+<li>
+<code>didImputation</code> now supports triple difference estimation with <code>td</code> option.</li>
+</ul>
+</div>
+<div id="bugs" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bugs" class="anchor"></a>Bugs</h2>
+<ul>
+<li>Rename internal variables to avoid conflict with user input.</li>
+</ul>
+</div>
+<div id="misc" class="section level2">
+<h2 class="hasAnchor">
+<a href="#misc" class="anchor"></a>Misc</h2>
+<ul>
+<li>Updated <code>README</code>.</li>
+<li>A vignette is now available.</li>
+</ul>
+</div>
+</div>
+    <div id="didimputation-002-2021-08-05" class="section level1">
+<h1 class="page-header" data-toc-text="0.0.2">
+<a href="#didimputation-002-2021-08-05" class="anchor"></a>didImputation 0.0.2 (2021-08-05)</h1>
+<div id="features-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#features-1" class="anchor"></a>Features</h2>
+<ul>
+<li>New function <code><a href="../reference/generateDidData.html">generateDidData()</a></code> to create fake data.</li>
+<li>
+<code>didImputation</code> now supports sample weights.</li>
+</ul>
+</div>
+<div id="bugs-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bugs-1" class="anchor"></a>Bugs</h2>
+<ul>
+<li>Now raise error when <code>fixest::predict()</code> cannot extract fixed-effects.</li>
+</ul>
+</div>
+<div id="misc-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#misc-1" class="anchor"></a>Misc</h2>
+<ul>
+<li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
+<li>Update <code>README</code> with estimation method.</li>
+</ul>
+</div>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 

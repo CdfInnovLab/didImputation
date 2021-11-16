@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">didImputation</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.4</span>
       </span>
     </div>
 
@@ -65,8 +65,18 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="news/index.html">Changelog</a>
+</li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/CdfInnovLab/didImputation/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -110,7 +120,7 @@
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">didImputation</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/CdfInnovLab/didImputation">didImputation</a></span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">did_simulated</span><span class="op">)</span>
 
@@ -138,21 +148,47 @@
 <span class="co">#&gt; Signif. Code: 0 '***' 0.01 '**' 0.05 '*' 0.1 '' 1 </span>
 <span class="co">#&gt; Wald stats for pre-trends:</span>
 <span class="co">#&gt; Wald (joint nullity): stat = 0.473843, p = 0.754974, on 4 and 860 DoF, VCOV: Clustered (i).</span></code></pre></div>
-<p>You can print the result easily with <code>didplot</code> <img src="reference/figures/README-pressure-1.png" width="100%"></p>
+<p>You can print the result easily with <code>didplot</code></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="reference/didplot.html">didplot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-plot-1.png" width="100%"></p>
 </div>
+</div>
+<div id="how-it-works" class="section level1">
+<h1 class="hasAnchor">
+<a href="#how-it-works" class="anchor"></a>How it works</h1>
+<p>didImputation estimates the effects of a binary treatment with staggered timing. It allows for arbitrary heterogeneity of treatment and dynamic effects.</p>
+<p>The estimation is a three step procedures</p>
+<ol>
+<li>
+<p><strong>Estimate</strong> a linear model on non treated observations only (it <embed src="https://latex.codecogs.com/png.latex?%5COmega_0" title="\Omega_0"></embed>) (either not-yet-treated or never-treated).</p>
+<p><embed src="https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_0%29%20%3D%20%5Calpha_i%20%2B%20%5Cbeta_t%20%2B%20X_%7Bit%7D%27%5Cdelta%20%2B%20%5Cvarepsilon_%7Bit%7D" title="Y_{it}(0|it \in \Omega_0) = \alpha_i + \beta_t + X_{it}'\delta + \varepsilon_{it}"></embed></p>
+</li>
+<li>
+<p><strong>Impute</strong> the treated observations (<embed src="https://latex.codecogs.com/png.latex?it%20%5Cin%20%5COmega_1" title="it \in \Omega_1"></embed>) potential outcome <embed src="https://latex.codecogs.com/png.latex?Y_%7Bit%7D%280%29" title="Y_{it}(0)"></embed> and obtain treatment effect <embed src="https://latex.codecogs.com/png.latex?%5Ctau_%7Bit%7D" title="\tau_{it}"></embed> by substracting the predicted outcome from step 1</p>
+<p><embed src="https://latex.codecogs.com/png.latex?%5Cbegin%7Balign%2A%7D%0A%5Chat%7BY%7D_%7Bit%7D%280%7Cit%20%5Cin%20%5COmega_1%29%20%26%3D%20%5Chat%7B%5Calpha%7D_i%20%2B%20%5Chat%7B%5Cbeta%7D_t%20%2B%20X_%7Bit%7D%27%5Chat%7B%5Cdelta%7D%20%5C%5C%0A%5Chat%7B%5Ctau%7D_%7Bit%7D%20%26%3D%20Y_%7Bit%7D%20-%20%5Chat%7BY%7D_%7Bit%7D%280%29%0A%5Cend%7Balign%2A%7D" title="\begin{align*} \hat{Y}_{it}(0|it \in \Omega_1) &amp;= \hat{\alpha}_i + \hat{\beta}_t + X_{it}'\hat{\delta} \ \hat{\tau}_{it} &amp;= Y_{it} - \hat{Y}_{it}(0) \end{align*}"></embed></p>
+</li>
+<li>
+<p><strong>Average</strong> estimated treatment effects <embed src="https://latex.codecogs.com/png.latex?%5Ctau_%7Bit%7D" title="\tau_{it}"></embed> to the estimand of interest.</p>
+<blockquote>
+<p>For the overall average treatment effect, the estimate is defined by</p>
+<p><embed src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctau%7D%20%3D%20%5Csum_%7Bit%20%5Cin%20%5COmega_1%7D%20%5Ctau_%7Bit%7D" title="\hat{\tau} = \sum_{it \in \Omega_1} \tau_{it}"></embed></p>
+</blockquote>
+</li>
+</ol>
 </div>
 <div id="todo" class="section level1">
 <h1 class="hasAnchor">
 <a href="#todo" class="anchor"></a>TODO</h1>
 <ul>
 <li>
-<input type="checkbox" disabled>
+<input type="checkbox" disabled checked>
 Estimation weights</li>
 <li>
-<input type="checkbox" disabled>
+<input type="checkbox" disabled checked>
 Triple differences</li>
 <li>
-<input type="checkbox" disabled>
+<input type="checkbox" disabled checked>
 Vignette</li>
 <li>
 <input type="checkbox" disabled>
@@ -163,6 +199,21 @@ Unit invariant controls</li>
 <li>
 <input type="checkbox" disabled>
 Custom cluster</li>
+<li>
+<input type="checkbox" disabled>
+Latex export</li>
+<li>
+<input type="checkbox" disabled>
+Allow custom period length</li>
+<li>
+<input type="checkbox" disabled>
+Automatic panel balance</li>
+<li>
+<input type="checkbox" disabled>
+Interactions in fixed effects</li>
+<li>
+<input type="checkbox" disabled>
+Allow weights reuse</li>
 </ul>
 <div id="reference" class="section level2">
 <h2 class="hasAnchor">
@@ -179,7 +230,14 @@ Custom cluster</li>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+    <div class="links">
+<h2>Links</h2>
+<ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/CdfInnovLab/didImputation/">https://​github.com/​CdfInnovLab/​didImputation/​</a>
+</li>
+</ul>
+</div>
+<div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -200,7 +258,7 @@ Custom cluster</li>
 <li><a href="https://github.com/CdfInnovLab/didimputation/actions"><img src="https://github.com/cdfInnovLab/didimputation/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://codecov.io/gh/CdfInnovLab/didImputation?branch=master"><img src="https://codecov.io/gh/CdfInnovLab/didImputation/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-<li><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/badge/devel%20version-0.0.1.0-blue.svg"></a></li>
+<li><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/badge/devel%20version-0.0.2-blue.svg"></a></li>
 <li><a href="https://github.com/CdfInnovLab/didImputation"><img src="https://img.shields.io/github/languages/code-size/CdfInnovLab/didImputation.svg"></a></li>
 </ul>
 </div>
