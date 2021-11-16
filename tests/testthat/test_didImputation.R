@@ -1,6 +1,6 @@
 data("did_simulated")
 base_stagg <- fixest::base_stagg
-dt_td <- didImputation::generateDidData(i = 1000,
+dt_het <- didImputation::generateDidData(i = 1000,
                        t = 5,
                        treatment = ~ d * (ig+1) * (k+1)
 )
@@ -65,10 +65,10 @@ test_that("Estimate overall ATT", {
 })
 
 
-test_that("Triple Difference runs without errors", {
-  est <- didImputation(y ~ 0 | i + t + ig,
-      data = dt_td,
-      td = T,
+test_that("Heterogeneity regression runs without errors", {
+  est <- didImputation(y ~ 0 | i + t,
+      data = dt_het,
+      het = "ig",
       cohort = "g")
 
   expect_length(est$coefs, 8)

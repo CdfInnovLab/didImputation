@@ -1,6 +1,6 @@
 Package: didImputation
 Title: Staggered difference-in-differences estimation
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: c(
     person(given = "Antoine",
            family = "Mayerowitz",
@@ -30,7 +30,7 @@ Config/testthat/edition: 3
 Imports: 
     data.table,
     ggplot2,
-    fixest (>= 0.9),
+    fixest (>= 0.10.1),
     collapse,
     rlang,
     purrr,

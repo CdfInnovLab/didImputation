@@ -158,14 +158,14 @@ est <- didImputation(y0 = y ~ x1 | i + t,
 summary(est)
 ```
 
-## Triple difference
-We may want to run triple difference (or __difference-in-difference-in-differences__), this is particularly useful if we want to run an event-study with multiple contrasts (e.g. sex, age class, region) while keeping the whole sample (such that we maintain statistical power). We can do that simply by turning the `td` option to `TRUE`. By default, the function will use the third fixed effect in `y0` as the triple difference contrast. If we wish to use another variable, we simply write the column name.
+## Heterogeneity
+We may want to run heterogeneity tests, this is particularly useful if we want to run an event-study with multiple contrasts (e.g. sex, age class, region) while keeping the whole sample (such that we maintain statistical power). We can do that simply with option `het`. The estimation will produce a result for each contrast.
 
 ```{r}
 # Generate data with unit invariant heterogeneous effect
-data_td <- generateDidData(i = 2000,
+data_het <- generateDidData(i = 5000,
                         t = 10,
-                        treatment = ~ d * (ig+1) * (k+1)
+                        treatment = ~ d * (ig + 1) * (k + 1)
 )
 
 # Compute true ATT for later plot
@@ -174,17 +174,17 @@ trueATT <- data.frame(k = rep(-4:8, 2),
                      d = as.numeric(rep(-4:8, 2) >= 0))
 
 trueATT$y <- with(trueATT,{
-      d * (ig+1) * (k+1)
+      d * (ig + 1) * (k + 1)
 })
 
-# Estimate the triple difference
-est_td <- didImputation(y ~ 0 | i + t + ig,
+# Estimate the heterogeneous effect
+est_het <- didImputation(y ~ 0 | i + t,
               cohort = "g",
-              data = data_td,
-              coef = -4:Inf,
-              td = TRUE)
+              het = "ig",
+              data = data_het,
+              coef = -4:Inf)
 
-didplot(est_td) +
+didplot(est_het) +
   geom_point(data = trueATT,
              aes(x = k, y = y, color = factor(ig), shape = "True ATT"),
              size = 3) +

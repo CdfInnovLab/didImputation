@@ -21,6 +21,7 @@ computeWeights <- function(s, ...) {
   .k <- NULL
   .w1 <- NULL
   .guess <- NULL
+  .d <- NULL
 
   dt <- s$data
 
@@ -33,10 +34,12 @@ computeWeights <- function(s, ...) {
   # Compute the denominator, which is the fraction of
   # untreated obs in each dimensions
   computeDenomFe <- function(fe) {
+    .d <- NULL
     dt[.d == 0, paste0(".denom_", fe) := sum(.wei), by = c(fe)]
   }
 
   computeDenomControl <- function(c, cname) {
+    .d <- NULL
     cmean <- eval(expr(dt[.d == 0, fmean(!!c, w = .wei)]))
 
     eval(expr(dt[, paste0(".dm_", cname) := !!c - cmean])) # demeaned control
@@ -52,7 +55,7 @@ computeWeights <- function(s, ...) {
     if(is.na(.j)){
       dt[.k == .i, paste0(w_i) := .w1]
     } else {
-      dt[.k == .i & eval(as.name(s$td)) == .j, paste0(w_i) := .w1]
+      dt[.k == .i & eval(as.name(s$het)) == .j, paste0(w_i) := .w1]
     }
   }
 
@@ -112,6 +115,7 @@ computeWeights <- function(s, ...) {
 
 hasEffectiveSample <- function(wi, dt, hhi) {
   .wei <- NULL
+  .d <- NULL
   dt[.d == 1, fsum(abs(get(wi))^2, w = .wei)] <= hhi
 }
 
@@ -179,6 +183,7 @@ computeWeightFe <- function(dt, w_i, denom, fe) {
   # w_i is equal to 1/.N for d==1 & k == i
   .sumw <- NULL
   .wei <- NULL
+  .d <- NULL
 
   dt[, .sumw := fsum(get(w_i), get(fe), .wei, TRA = "replace_fill")]
   dt[.d == 0, (w_i) := get(w_i) - .sumw / get(denom)]
@@ -202,6 +207,7 @@ computeWeightControl <- function(dt, w_i, denom, c) {
   # w_i is equal to 1/.N for d==1 & k == i
   .sumw <- NULL
   .wei <- NULL
+  .d <- NULL
 
   dt[, .sumw := fsum(get(w_i) * get(c), .wei, TRA = "replace_fill")]
   dt[.d == 0, (w_i) := get(w_i) - .sumw * get(c) / denom]

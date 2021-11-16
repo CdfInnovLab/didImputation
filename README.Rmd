@@ -101,7 +101,7 @@ $$\begin{align*}
 # TODO
 
 - [x] Estimation weights
-- [x] Triple differences
+- [x] Heterogeneity
 - [x] Vignette
 - [ ] Time invariant controls
 - [ ] Unit invariant controls

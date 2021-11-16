@@ -26,7 +26,7 @@ parseFEs <- function(f, ...) {
 #' @return A data frame.
 #'
 subsetData <- function(data, s){
-  vars_to_keep <- list(all.vars(s$y0), s$time, s$cohort, s$unit, s$td)
+  vars_to_keep <- list(all.vars(s$y0), s$time, s$cohort, s$unit, s$het)
   if( is.character(s$w) ) {
     vars_to_keep <- c(vars_to_keep, s$w)
   }
@@ -87,7 +87,7 @@ parseControls <- function(f, ...) {
 #' - `a`: Individual fixed effect
 #' - `b`: Time fixed effect
 #' - `t`: Calendar time
-#' - `ig`: a random unit invariant value in {0, 1, 2}. Can be used to define heterogeneous effect in triple difference.
+#' - `ig`: a random unit invariant value in {0, 1, 2}. Can be used to define heterogeneous effects.
 #'
 #' @section Default outcome:
 #'

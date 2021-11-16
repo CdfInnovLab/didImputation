@@ -14,10 +14,9 @@
 #' @return an object of class "didImputation" mutated with imputed values.
 #'
 runImputation <- function(s, ...) {
-  eps <- NULL
-  resid <- NULL
-  cf <- NULL
-  tau <- NULL
+  .eps <- NULL
+  .cf <- NULL
+  .d <- NULL
 
   # split treat/non-treated populations
   data <- s$data
@@ -33,7 +32,7 @@ runImputation <- function(s, ...) {
   potential_outcome <- purrr::quietly(predict)(model, newdata = treated)
 
   if (isTRUE(grepl('not regular', potential_outcome$messages))) {
-    stop("Error: Cannot predict potential outcome because fixed-effects are not regular. You can try with less fixed-effects (if that is possible), or use a balanced panel.")
+    stop("Error: Cannot properly predict potential outcome because fixed-effects are not regular. You can try with less fixed-effects (if that is possible), or use a balanced panel.")
   }
 
   data <- data[.d == 1, .cf := potential_outcome$result]

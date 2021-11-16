@@ -66,7 +66,7 @@ prepare <- function(s) {
     s$weights_cols <- paste0(".w_", (1:s$nweights - 1))
   } else {
     weight_comb <- unique(s$data[.k >= 0 & .k <= eval(s$coef[2])][is.finite(.k),
-                                                               .(.k, eval(as.name(s$td)))])
+                                                               .(.k, eval(as.name(s$het)))])
     s$weights_cols <- paste0(".w_", weight_comb[[1]], "_", weight_comb[[2]])
   }
 

@@ -17,6 +17,7 @@ coef.didImputation <- function(object, ...) {
 #' @export summary.didImputation
 #' @export
 summary.didImputation <- function(object, ...) {
+  .d <- NULL
   s <- object
 
   ans <- list(
@@ -32,7 +33,7 @@ summary.didImputation <- function(object, ...) {
     horizons = s$coef,
     coeftable = s$coeftable,
     weights_cols = s$data[, .SD, .SDcols = s$weights_cols],
-    signif = symnum(s$coeftable$`Pr(>|t|))`, corr = FALSE, na = FALSE,
+    signif = symnum(s$coeftable$`Pr(>|t|)`, corr = FALSE, na = FALSE,
                      cutpoints = c(0, 0.01, 0.05, 0.1, 1),
                      symbols = c("***", "**", "*", ""))
   )
@@ -63,11 +64,11 @@ print.summary.didImputation <- function(x, digits = 3, ...){
   p_threshold <- 1*10^(-digits)
   p_threshold_str <- formatC(p_threshold, digits)
 
-  dt$`Pr(>|t|))` <- ifelse(dt$`Pr(>|t|))` < p_threshold,
+  dt$`Pr(>|t|)` <- ifelse(dt$`Pr(>|t|)` < p_threshold,
                            paste0('<',p_threshold_str),
-                           dt$`Pr(>|t|))`)
+                           dt$`Pr(>|t|)`)
 
-  dt$`Pr(>|t|))` <- paste0(dt$`Pr(>|t|))`, ans$signif)
+  dt$`Pr(>|t|)` <- paste0(dt$`Pr(>|t|)`, ans$signif)
 
 
   cat("Event Study: imputation method. Dep. Var.: ", ans$dep, "\n")
@@ -148,7 +149,7 @@ didplot <- function(object,
                     ...) {
   with(object, {
 
-    # Extract timing (and group in case of triple difference)
+    # Extract timing (and group in case of heterogeneity)
     if(object$ncontrast == 1) {
       coeftable$x <- as.numeric(
         sapply(
@@ -185,7 +186,7 @@ didplot <- function(object,
         x = -1,
         "Std. Error" = NaN,
         "t value" = NaN,
-        "Pr(>|t|))" = NaN,
+        "Pr(>|t|)" = NaN,
         check.names = FALSE
       )
 

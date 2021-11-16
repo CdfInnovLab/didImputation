@@ -26,12 +26,12 @@ SE <- function(s, ...) {
 #'
 computeWeightSE <- function(w_i, dt, s, ...) {
   # Must declare NSE variables to avoid CRAN Check error
-  .wei <- NULL
   .tau_mean <- NULL
   .tau <- NULL
   .eps <- NULL
+  var <- NULL
+  .d <- NULL
   . <- NULL
-  .var <- NULL
 
   group <- c(s$time, s$cohort)
 
