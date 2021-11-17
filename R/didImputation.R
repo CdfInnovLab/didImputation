@@ -78,6 +78,7 @@
 #' @author Maxime Gravoueille
 #'
 #' @importFrom rlang enexpr
+#' @importFrom collapse fmean
 #'
 #' @references
 #' Borusyak, K., Jaravel, X., & Spiess, J. (2021). Revisiting event study designs: Robust and efficient estimation. Working paper.
@@ -190,7 +191,7 @@ didImputation <- function(y0,
   s <- runImputation(s)
 
   # Compute ATT by horizon and get labels
-  s$coefs <- s$data[.d == 1, .(mean(.tau)), by = eval(s$by)][.k >= s$coef[[1]] & .k <= s$coef[[2]]]
+  s$coefs <- s$data[.d == 1, .(fmean(.tau, w=.wei)), by = eval(s$by)][.k >= s$coef[[1]] & .k <= s$coef[[2]]]
   if(s$ncontrasts == 1){
     coeflabs <- paste0("k::", s$coefs$.k)
   } else {

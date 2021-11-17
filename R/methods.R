@@ -106,7 +106,6 @@ print.didImputation <- function(x, ...) {
   }
 }
 
-
 #' DiD imputation plot
 #'
 #' @description
@@ -147,101 +146,116 @@ didplot <- function(object,
                     type = "default",
                     ci = 0.95,
                     ...) {
-  with(object, {
 
-    # Extract timing (and group in case of heterogeneity)
-    if(object$ncontrast == 1) {
-      coeftable$x <- as.numeric(
-        sapply(
-          strsplit(
-            rownames(coeftable), "::"
-          ), function(x) x[2]
-        )
+  if(!inherits(object, "didImputation")){
+    stop("Wrong argument: didplot takes a didImputation object as argument.")
+  }
+
+  if(ci <= 0 | ci >= 1){
+    stop("Confidence Interval: ci must be strictly between 0 and 1")
+  }
+
+  coeftable <- object$coeftable
+
+  # Extract timing (and group in case of heterogeneity)
+  if(object$ncontrast == 1) {
+    coeftable$x <- as.numeric(
+      sapply(
+        strsplit(
+          rownames(coeftable), "::"
+        ), function(x) x[2]
       )
-    } else {
-      coeftable$x <- as.numeric(
-        sapply(
-          strsplit(
-            rownames(coeftable), ":"
-          ), function(x) x[3]
-        )
+    )
+  } else if (object$ncontrast > 1) {
+    coeftable$x <- as.numeric(
+      sapply(
+        strsplit(
+          rownames(coeftable), ":"
+        ), function(x) x[3]
       )
-      coeftable$group <- as.factor(
-        sapply(
-          strsplit(
-            rownames(coeftable), ":"
-          ), function(x) x[6]
-        )
+    )
+    coeftable$group <- as.factor(
+      sapply(
+        strsplit(
+          rownames(coeftable), ":"
+        ), function(x) x[6]
       )
-    }
+    )
+  } else {
+    stop("Contrasts: didplot cannot find the number of contrasts. This error was
+         unforseen. If you think the error does not come from you, please create
+         an issue on github.")
+  }
 
-    q <- qnorm(ci + (1 - ci) / 2)
+  q <- qnorm(ci + (1 - ci) / 2)
 
-    ylab <- paste0("Estimate and ", ci * 100, "% Conf. Int.")
+  ylab <- paste0("Estimate and ", ci * 100, "% Conf. Int.")
 
-    if (!any(coeftable$x == -1, na.rm = TRUE) & min(coeftable$x, na.rm = TRUE) < -1) {
-      ref <- data.frame(
-        Estimate = 0,
-        row.names = paste0("k::", -1),
-        x = -1,
-        "Std. Error" = NaN,
-        "t value" = NaN,
-        "Pr(>|t|)" = NaN,
-        check.names = FALSE
-      )
+  # This allow for -1 as a reference period, but it is not yet implemented
+  # if (!any(coeftable$x == -1, na.rm = TRUE) & min(coeftable$x, na.rm = TRUE) < -1) {
+  #   ref <- data.frame(
+  #     Estimate = 0,
+  #     row.names = paste0("k::", -1),
+  #     x = -1,
+  #     "Std. Error" = NaN,
+  #     "t value" = NaN,
+  #     "Pr(>|t|)" = NaN,
+  #     check.names = FALSE
+  #   )
+  #
+  #   coeftable <- rbind(coeftable, ref)
+  # }
 
-      coeftable <- rbind(coeftable, ref)
-    }
+
+  if(object$ncontrasts == 1) {
+    p <- ggplot(coeftable, aes(x = x, y = Estimate))
+  } else {
+    p <- ggplot(coeftable, aes(x = x, y = Estimate, color = group))
+  }
+
+  p <- p +
+    xlab("Time to treatment") +
+    ylab(ylab) +
+    scale_x_continuous(breaks = seq(min(coeftable$x, na.rm = T), max(coeftable$x, na.rm = T))) +
+    theme_classic() +
+    theme(
+      panel.grid.major.y = element_line(colour = "lightgrey", linetype = "dotted"),
+      axis.text = element_text(size = 12)
+    )
+
+  if (any(coeftable$x < 0)) p <- p + geom_vline(xintercept = -0.5, color = "firebrick")
 
 
-    if(ncontrasts == 1) {
-      p <- ggplot(coeftable, aes(x = x, y = Estimate))
-    } else {
-      p <- ggplot(coeftable, aes(x = x, y = Estimate, color = group))
-    }
-
+  if (type == "default") {
     p <- p +
-      xlab("Time to treatment") +
-      ylab(ylab) +
-      scale_x_continuous(breaks = seq(min(coeftable$x, na.rm = T), max(coeftable$x, na.rm = T))) +
-      theme_classic() +
-      theme(
-        panel.grid.major.y = element_line(colour = "lightgrey", linetype = "dotted"),
-        axis.text = element_text(size = 12)
+      geom_hline(yintercept = 0, linetype = "dashed") +
+      geom_point() +
+      geom_errorbar(aes(
+        ymin = Estimate - `Std. Error` * q,
+        ymax = Estimate + `Std. Error` * q
+      ),
+      width = 0.2
       )
-
-    if (any(coeftable$x < 0)) p <- p + geom_vline(xintercept = -0.5, color = "firebrick")
-
-
-    if (type == "default") {
-      p <- p +
-        geom_hline(yintercept = 0, linetype = "dashed") +
-        geom_point() +
-        geom_errorbar(aes(
+  } else if (type == "IR") {
+    p <- p +
+      geom_hline(yintercept = 0, linetype = "solid") +
+      geom_line() +
+      if(object$ncontrasts == 1){
+        geom_ribbon(aes(
+          ymax = Estimate + `Std. Error` * q,
           ymin = Estimate - `Std. Error` * q,
-          ymax = Estimate + `Std. Error` * q
-        ),
-        width = 0.2
-        )
-    } else if (type == "IR") {
-      p <- p +
-        geom_hline(yintercept = 0, linetype = "solid") +
-        geom_line() +
-        if(ncontrasts == 1){
-          geom_ribbon(aes(
-            ymax = Estimate + `Std. Error` * q,
-            ymin = Estimate - `Std. Error` * q,
-          ), linetype = 2, alpha = 0, colour = "black")
-        } else {
-          geom_ribbon(aes(
-            ymax = Estimate + `Std. Error` * q,
-            ymin = Estimate - `Std. Error` * q,
-          ), linetype = 2, alpha = 0)
-        }
-    }
+        ), linetype = 2, alpha = 0, colour = "black")
+      } else {
+        geom_ribbon(aes(
+          ymax = Estimate + `Std. Error` * q,
+          ymin = Estimate - `Std. Error` * q,
+        ), linetype = 2, alpha = 0)
+      }
+  } else {
+    stop('didplot: type must be one of `default` or `IR`')
+  }
 
-    return(p)
-  })
+  return(p)
 }
 
 #' DiD imputation plot
