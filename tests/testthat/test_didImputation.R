@@ -11,6 +11,13 @@ basicReg <- rlang::expr(didImputation(
   data = did_simulated
 ))
 
+hetReg <- rlang::expr(didImputation(
+  y0 = y ~ 0 | i + t,
+  cohort = "g",
+  het = "ig",
+  data = dt_het
+))
+
 warnreg <- rlang::expr(didImputation(
   y0 = y ~ 0 | id + year,
   unit = "id",
@@ -99,15 +106,6 @@ test_that("User can set leads and lags", {
   expect_length(res$pre_trends$coefficients, 4)
 })
 
-
-test_that("methods execute without errors", {
-  res <- eval(basicReg)
-
-  expect_error(invisible(print(res)), NA)
-  expect_error(invisible(summary(res)), NA)
-  expect_error(invisible(didplot(res)), NA)
-})
-
 test_that("No name collision with internal variable", {
   did_simulated$s <- did_simulated$y
   did_simulated$k <-  did_simulated$i
@@ -122,4 +120,126 @@ test_that("No name collision with internal variable", {
   expect_error(eval(collision_Reg), NA)
 })
 
+test_that("User can provide weights", {
+  dt_het$weight <- dt_het$ig + 0.000001
+
+  res_weighted <- didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    coef = 0:0,
+    OATT = T,
+    w = "weight",
+    data = dt_het
+  )
+
+  res_unweighted <- didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    OATT = T,
+    data = dt_het[dt_het$ig == 1, ]
+  )
+
+  expect_equal(coef(res_weighted), coef(res_unweighted), tolerance = 1e-3)
+
+})
+
+test_that("Verbose run without error", {
+  expect_output(didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    data = did_simulated,
+    verbose = 3
+  ),
+  regexp = "*convergence*")
+})
+
+test_that("Throw warning for no convergence", {
+  expect_warning(didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    OATT = TRUE,
+    data = did_simulated,
+    maxit = 2
+  ), regexp = "*Max number of iterations*")
+})
+
+test_that("Throw error if user asks for more coefs than available", {
+  expect_error(didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    coef = -Inf:200,
+    data = did_simulated,
+  ), regexp = "*Lags must be lower*")
+
+  expect_error(didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    coef = -200:Inf,
+    data = did_simulated,
+  ), regexp = "*Leads must be greater*")
+})
+
+# Check methods
+
+test_that("Coefs can be extracted", {
+  reg <- eval(basicReg)
+
+  expect_error(coef(reg), NA)
+  expect_length(coef(reg), 5)
+  expect_named(coef(reg))
+  expect_type(reg$coeftable, "list")
+  expect_length(reg$coeftable, 4)
+
+  # table without SE
+  reg <- didImputation(
+    y0 = y ~ 0 | i + t,
+    cohort = "g",
+    data = did_simulated,
+    with.se = FALSE
+  )
+  expect_error(coef(reg), NA)
+})
+
+test_that("ATT can be extracted", {
+  reg <- rlang::duplicate(basicReg)
+  reg$OATT <- TRUE
+  reg <- coef(eval(reg))
+
+  expect_length(reg, 1)
+  expect_named(reg, "k::0")
+})
+
+test_that("Can print output", {
+  res <- eval(basicReg)
+  summary_res <- summary(res)
+
+  expect_error(invisible(print(res)), NA)
+  expect_error(invisible(summary(res)), NA)
+  expect_output(print(res), regexp = "Event Study")
+  expect_output(print(summary_res), regexp = "Event Study")
+  expect_error(invisible(print(summary(res))), NA)
+})
+
+test_that("Can plot results", {
+  res <- eval(basicReg)
+
+  expect_error(invisible(plot(res)), NA)
+  expect_error(invisible(didplot(res)), NA)
+  expect_error(invisible(didplot(res, type = "IR")), NA)
+  expect_error(invisible(didplot(res, type = "lol")), regexp = "*type*")
+  expect_error(invisible(didplot(res, ci = -1)), regexp = "*Confidence*")
+  expect_error(invisible(didplot(iris)), regexp = "*argument*")
+
+  res_het <- eval(hetReg)
+  expect_error(invisible(didplot(res)), NA)
+  expect_error(invisible(didplot(res, type = "IR")), NA)
+})
+
+
+test_that("methods execute without errors", {
+  res <- eval(basicReg)
+
+  expect_error(invisible(print(res)), NA)
+  expect_error(invisible(plot(res)), NA)
+})
 

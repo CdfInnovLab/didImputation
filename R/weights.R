@@ -25,8 +25,6 @@ computeWeights <- function(s, ...) {
 
   dt <- s$data
 
-  dt[, .wei := 1] # By default each obs is weighted by 1. Must now allow for user weights
-
   dt[.d == 1, .w1 := 1 / .N, by = eval(s$by)]
 
   dt[, s$weights_cols := 0]
@@ -152,7 +150,7 @@ iterateWeight <- function(params, dt, i, w) {
   # Stops the function if fit < tol | i > maxit.
   if (fit > params$tol & i < params$maxit) {
     iterateWeight(params, dt, i + 1, w)
-  } else if (i > params$maxit) {
+  } else if (fit > params$tol) {
     warning(paste0(
       "Weights convergence: Max number of iterations reached for ",
       w,

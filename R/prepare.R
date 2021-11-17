@@ -26,7 +26,10 @@ prepare <- function(s) {
     if (s$w %in% names(s$data)) {
       s$w <- s$data[[s$w]]
     }
-    s$data$.wei <- (s$w / collapse::fsum(s$w)) * length(na.omit(s$w))
+    if(any(s$w <= 0)) {
+      stop("Weights must be positive.")
+    }
+    s$data$.wei <- (s$w / collapse::fsum(s$w)) * fsum(s$w > 0)
   } else {
     s$data$.wei <- 1
   }

@@ -24,7 +24,7 @@ runImputation <- function(s, ...) {
   ntreated <- data[.d == 0, ]
 
   # run model used for imputation on non-treated population
-  model <- feols(s$y0, ntreated, fixef.rm = "none")
+  model <- feols(s$y0, ntreated, fixef.rm = "none", weights = ~ .wei)
   s$counterfactual <- model
 
   # predict counterfactual outcome
@@ -45,7 +45,7 @@ runImputation <- function(s, ...) {
 
 
   # compute treatment effect by unit
-  data$.tau <- s$data[[s$y]] - s$data$.cf
+  data$.tau <- data[[s$y]] - data$.cf
   s$data <- data
 
   return(s)
