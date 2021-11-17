@@ -1,5 +1,9 @@
 data("did_simulated")
 base_stagg <- fixest::base_stagg
+dt_het <- didImputation::generateDidData(i = 1000,
+                       t = 5,
+                       treatment = ~ d * (ig+1) * (k+1)
+)
 
 basicReg <- rlang::expr(didImputation(
   y0 = y ~ 0 | i + t,
@@ -18,6 +22,21 @@ warnreg <- rlang::expr(didImputation(
 
 test_that("Regression runs without errors", {
   expect_error(eval(basicReg), NA)
+})
+
+test_that("Estimation can include controls", {
+  dt <- didImputation::generateDidData(i = 500,
+                                          t = 5,
+                                          control = TRUE,
+                                          treatment = ~ d * (ig+1) * (k+1)
+  )
+
+  expect_error(didImputation(
+    y0 = y ~ x1 | i + t,
+    cohort = "g",
+    data = dt
+  ),
+  NA)
 })
 
 test_that("Regression on simulated data gives the right results", {
@@ -43,6 +62,16 @@ test_that("Estimate overall ATT", {
     tolerance = 1e-6,
     ignore_attr = TRUE
   )
+})
+
+
+test_that("Heterogeneity regression runs without errors", {
+  est <- didImputation(y ~ 0 | i + t,
+      data = dt_het,
+      het = "ig",
+      cohort = "g")
+
+  expect_length(est$coefs, 8)
 })
 
 test_that("User can set leads and lags", {
@@ -77,6 +106,20 @@ test_that("methods execute without errors", {
   expect_error(invisible(print(res)), NA)
   expect_error(invisible(summary(res)), NA)
   expect_error(invisible(didplot(res)), NA)
+})
+
+test_that("No name collision with internal variable", {
+  did_simulated$s <- did_simulated$y
+  did_simulated$k <-  did_simulated$i
+  did_simulated$wei <- did_simulated$t
+
+  collision_Reg <- rlang::expr(didImputation(
+    y0 = s ~ 0 | k + wei,
+    cohort = "g",
+    data = did_simulated
+  ))
+
+  expect_error(eval(collision_Reg), NA)
 })
 
 

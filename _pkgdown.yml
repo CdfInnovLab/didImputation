@@ -10,3 +10,7 @@ reference:
     desc: Visualizing the estimation
     contents:
       - didplot
+  - title: Misc.
+    desc: Miscellaneous functions
+    contents:
+      - generateDidData

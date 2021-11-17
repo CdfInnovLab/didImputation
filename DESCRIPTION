@@ -1,6 +1,6 @@
 Package: didImputation
 Title: Staggered difference-in-differences estimation
-Version: 0.0.1.0
+Version: 0.0.4
 Authors@R: c(
     person(given = "Antoine",
            family = "Mayerowitz",
@@ -14,6 +14,7 @@ Description: Set of functions to estimate, report and visualize results in stagg
 Depends:
     R (>= 3.5),
 License: MIT + file LICENSE
+URL: https://github.com/CdfInnovLab/didImputation
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -29,7 +30,7 @@ Config/testthat/edition: 3
 Imports: 
     data.table,
     ggplot2,
-    fixest (>= 0.9),
+    fixest (>= 0.10.1),
     collapse,
     rlang,
     purrr,

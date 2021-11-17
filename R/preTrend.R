@@ -17,16 +17,22 @@
 #' @importFrom stats as.formula
 #'
 preTrend <- function(s, ...) {
+  .d <- NULL
+
   leads <- s$coef[1]
 
-  reg <- paste0("~ i(k,  keep = -1:leads ) + ")
+  if(s$ncontrasts == 1) {
+    reg <- paste0("~ i(.k,  keep = -1:leads ) + ")
+  } else {
+    reg <- paste0("~ i(.k, i.", s$het,", keep = -1:leads ) + ")
+  }
 
   pre_formula <- as.formula(gsub("~ ", reg, deparse(s$y0)))
 
   # Run TWFE regression with leads on untreated observations.
   reg_pre <- fixest::feols(
     pre_formula,
-    s$data[d == 0]
+    s$data[.d == 0]
   )
 
   s$pre_trends <- reg_pre

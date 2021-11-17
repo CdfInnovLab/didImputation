@@ -26,18 +26,18 @@ SE <- function(s, ...) {
 #'
 computeWeightSE <- function(w_i, dt, s, ...) {
   # Must declare NSE variables to avoid CRAN Check error
-  wei <- NULL
-  tau_mean <- NULL
-  tau <- NULL
-  eps <- NULL
-  . <- NULL
+  .tau_mean <- NULL
+  .tau <- NULL
+  .eps <- NULL
   var <- NULL
+  .d <- NULL
+  . <- NULL
 
   group <- c(s$time, s$cohort)
 
-  dt[d == 1, tau_mean := (sum(get(w_i)^2 * tau)) / sum(get(w_i)^2), by = group]
-  dt[is.nan(tau_mean), tau_mean := 0]
-  dt[d == 1, eps := tau - tau_mean]
-  se <- dt[, .(var = sum(get(w_i) * eps)), by = c(s$unit)]
+  dt[.d == 1, .tau_mean := (sum(get(w_i)^2 * .tau)) / sum(get(w_i)^2), by = group]
+  dt[is.nan(.tau_mean), .tau_mean := 0]
+  dt[.d == 1, .eps := .tau - .tau_mean]
+  se <- dt[, .(var = sum(get(w_i) * .eps)), by = c(s$unit)]
   as.numeric(se[, .(se = sqrt(sum(var^2)))])
 }

@@ -2,7 +2,7 @@
 title: "Getting started"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting_started}
+  %\VignetteIndexEntry{Getting started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,8 +12,195 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(ggplot2)
 ```
+
+This package implements the imputation method developed by [Borusyak, Jaravel, and Spiess (2021)](https://uc5e4d5690cad8b63971f502beb3.dl.dropboxusercontent.com/cd/0/inline2/BTx5o7zNQteCIGa70QjOyslQ0p4DfhWhhY0TECO5mGPb_od1TbF97sfxQAm1P8GmDRtB3z8Sl4ayj_wk_HTDWXRNqElY6ARDcU8-98VK3YjZBDXh3CLVqx8cey4F-75YLZiBOZIy_rNvqUoR6I3g9Nozlm0oSww1UYMxefXQcewYB4CdPgIiFoZnNX4E79riQWYZF1VsfJbWyAVf8RMAGtLUcpXI7ATJXVsH58SUWzAACHyZgeIuZX9Ge7-0d0izDDe_JV-hJVN6zPvzkAjg787UX6JIwRRGeeovW8hEAtqzn21KCRvHwVwtVgXd3qBozo8XApe-PFKVeHOLkv4eCz-1kLkLyEVIws6l49nvolWa0-6VRyvyEOuyTxOgBy8TwbM/file) for staggered difference-in-differences. It allows for constant or dynamic treatment effects, among others. The following presentation highlights the main features available using a simple example. Note that this package is a wrapper around the following packages: `collapse`, `data.table` and `fixest`. It allows us a highly efficient estimation procedure, even with large and complex datasets.
+
+# A simple example 
+
+## Generating simulated data
+
+To show how to use the package, we will generate a simple dataset similar to the one used in the original paper. Let's first load the package:
 
 ```{r setup}
 library(didImputation)
 ```
+
+The custom function `generateDidData` is directly available to generate simulated data. The setup is as follows:
+
+- 10000 units $i$ observed over 6 periods $t$.
+- Units are randomly treated starting period 2 and some unit are never treated (`Inf` values). This information is summarized in $g_{it}$, representing the treatment group. The next step consists in defining the relative time to treatment-or horizon-$k_{it} = t-g$. For example, $k_{it} = 0$ means that unit $i$ is treated for the first time in period $t$.
+- Treatment effects $\tau_{it}$ vary by horizon, with $\tau_{it} = k_{it} + 1$ for treated observations.
+- We assume a linear data generating process: $Y_{it} = \alpha_i + \beta_t + \tau_{it} + \varepsilon_{it}$, where $\alpha_i$ are unit fixed-effects, $\beta_t$ are time fixed-effects and $\varepsilon_{it} \sim \mathcal{N}(0,1)$ are iid error terms.
+
+```{r}
+data <- generateDidData(i = 2000,
+                        t = 6,
+                        hdfe = FALSE,
+                        control = FALSE,
+                        treatment = ~ d * (k + 1))
+```
+
+Two implications are worth noting. They have been emphasized by the recent literature on staggered designs and are not specific to our setup.
+
+- Nobody is treated in the first period: we need at least one period for which a unit is not treated in order to impute the given unit fixed-effect.
+- Some observations remain untreated in the last period. We cannot impute the time fixed-effect for a period where everybody is treated.
+
+Let's plot the true treatment effects over time for each treatment group:
+
+```{r}
+agg <- aggregate(data[, "trueffect"],
+                 by = data[, c("t", "g")],
+                 mean)
+
+ggplot(agg, aes(x = t, y = x, color = as.factor(g))) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Period", y = "True ATT", color = "Treatment group") +
+  scale_x_continuous(breaks = seq(1, 6)) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+```
+
+## Estimation procedure
+
+The `didImputation` function estimates treatment effects. It allows for static and dynamic treatment effects (by horizon). Let's review some main arguments and options of this function.
+
+- `y0` is the counterfactual formula, i.e the formula under no treatment. It follows the `fixest` syntax: fixed-effects are inserted after the `|`. See the online [documentation](https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html) for further details. We add a 0 as the first argument on the right hand side to exclude the intercept from the estimation.
+- `data` is the dataset used for the estimation.
+- `cohort` is the treatment group, in our case the treatment period.
+- `unit` is the variable containing unit of observation identifiers. By default, it takes the first fixed-effect from the formula.
+- `time` is the variable containing period of observation identifiers. By default, it takes the second fixed-effect from the formula.
+- `coef` are the treatment coefficients to be estimated, given as a sequence. By default, it estimates the fully dynamic model with the maximum number of leads and lags. Note that for pre-trends, the omitted periods are the most distant ones. See below if you want to estimate the static treatment effect.
+
+```{r}
+est <- didImputation(y0 = y ~ 0 | i + t,
+                     data = data,
+                     cohort = "g",
+                     nevertreated.value = Inf,
+                     unit = "i",
+                     time = "t",
+                     coef = -Inf:Inf)
+```
+
+The `summary` method reports the results from the estimation:
+
+```{r}
+summary(est)
+```
+
+You can extract the coefficients table if you want to build your own plot or table.
+
+```{r}
+est$coeftable
+```
+
+Finally, we can plot the coefficients from the fully dynamic model using the `didplot` function (note that you can choose the confidence interval level to report). The results are very close to the true effects:
+
+```{r}
+didplot(est) +
+  geom_point(aes(y = c(0, 0, 0, 1, 2, 3, 4, 5), shape = "True ATT"),
+             size = 3, color = "firebrick" ) +
+  scale_shape_manual(name = "", values = c(9))
+```
+
+## Overall treatment effect
+
+The `didImputation` function allows for overall treatment effects through the `OATT` argument. When set equal to `TRUE`, the estimation reports the coefficient for the total average treatment to the treated and the pre-trends coefficients from the `coef` argument:
+
+```{r}
+static <- didImputation(y0 = y ~ 0 | i + t,
+                     data = data,
+                     cohort = "g")
+
+summary(static)
+```
+
+## Including other fixed-effects
+
+Additional fixed-effects can be directly included in the formula after the `|`. Lets generate a dataset with a high-dimensional fixed-effects variable and estimate the model:
+
+```{r}
+# generate data with hdfe
+data <- generateDidData(i = 2000,
+                        t = 6,
+                        hdfe = TRUE,
+                        control = FALSE,
+                        treatment = ~ d * (k + 1))
+
+# fully dynamic estimation
+est <- didImputation(y0 = y ~ 0 | i + t + hdfefactor,
+                     data = data,
+                     cohort = "g")
+
+summary(est)
+```
+
+## Including continuous controls
+
+Additional continuous controls can be directly included in the formula before the `|`. Lets generate a dataset with such control and estimate the model:
+
+```{r}
+# generate data with hdfe
+data <- generateDidData(i = 2000,
+                        t = 10,
+                        hdfe = FALSE,
+                        control = TRUE,
+                        treatment = ~ d * (k + 1))
+
+# fully dynamic estimation
+est <- didImputation(y0 = y ~ x1 | i + t,
+                     data = data,
+                     cohort = "g")
+
+summary(est)
+```
+
+## Heterogeneity
+We may want to run heterogeneity tests, this is particularly useful if we want to run an event-study with multiple contrasts (e.g. sex, age class, region) while keeping the whole sample (such that we maintain statistical power). We can do that simply with option `het`. The estimation will produce a result for each contrast.
+
+```{r}
+# Generate data with unit invariant heterogeneous effect
+data_het <- generateDidData(i = 5000,
+                        t = 10,
+                        treatment = ~ d * (ig + 1) * (k + 1)
+)
+
+# Compute true ATT for later plot
+trueATT <- data.frame(k = rep(-4:8, 2),
+                     ig = c(rep(1, 13), rep(0,13)),
+                     d = as.numeric(rep(-4:8, 2) >= 0))
+
+trueATT$y <- with(trueATT,{
+      d * (ig + 1) * (k + 1)
+})
+
+# Estimate the heterogeneous effect
+est_het <- didImputation(y ~ 0 | i + t,
+              cohort = "g",
+              het = "ig",
+              data = data_het,
+              coef = -4:Inf)
+
+didplot(est_het) +
+  geom_point(data = trueATT,
+             aes(x = k, y = y, color = factor(ig), shape = "True ATT"),
+             size = 3) +
+  scale_shape_manual(name = "", values = c(9))
+```
+
+# Additional features
+
+## Sample weights
+
+Sample weights can be used by passing the variable in the `w` argument.
+
+## Standard errors
+
+The standard errors are computed using an alternating projection method. You can tweek its meta-parameter by changing `tol` and `maxit`. To speed up the estimation procedure, you can set `with.se = FALSE`. Standard errors will not be computed in this case but estimation will be significqntly quicker.
+
+## Effective sample size
+
+Borusyak, K., Jaravel, X., & Spiess, J. give a condition on weights such that consistency of estimators holds. This condition states that the Herfindahl index of weights must converge to zero. Another interpretation is that the inverse of the index is a measure of 'effective sample size'. Authors recommand an effective sample size of at least 30. If the effective sample size is lower, a warning will be thrown. You can tweek this parameter by changing `effective.sample` option in `didImputation`.

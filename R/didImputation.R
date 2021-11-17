@@ -10,10 +10,11 @@
 #' @param coef R Expression of leads and lags (eg `coef = -5:8`). By default estimates whole dynamic effect. See Details.
 #' @param data A data frame or data.table
 #' @param cohort Character. Time of treatment identifier. By default it expect `Inf` for never treated units. You can override this with `nevertreated.value`
-#' @param w (not yet implemented) Numerical or Variable name. Default is `NULL`. Estimation weights
+#' @param w Numerical vector or Variable name. Default is `NULL`. Sample weights.
 #' @param OATT Logical, default is `FALSE`. If `TRUE` then the overall average treatment effect is computed instead of ATT at each horizon.
 #' @param unit Character, default is `NULL`. Unit identifier. If `NULL`, it default to the first fixed effect.
 #' @param time Character, default is `NULL`. Time period identifier. If `NULL`, it default to the second fixed effect.
+#' @param het Character, default is `NULL`. Heterogeneity estimation. Column name of the additional group(s). Will produce an estimate for each group.
 #' @param nevertreated.value Any, default is `Inf`. Value encoding the cohort of never treated units.
 #' @param effective.sample Numeric, default is `30`. Effective sample size under which the function will throw a warning. See details.
 #' @param with.se Logical, default is `TRUE`. Should standard errors be reported
@@ -129,6 +130,7 @@ didImputation <- function(y0,
                           nevertreated.value = Inf,
                           unit = NULL,
                           time = NULL,
+                          het = NULL,
                           w = NULL,
                           coef = -Inf:Inf,
                           OATT = FALSE,
@@ -140,29 +142,45 @@ didImputation <- function(y0,
                           effective.sample = 30) {
 
   . <- NULL
-  tau <- NULL
-  k <- NULL
+  .tau <- NULL
+  .k <- NULL
+  .d <- NULL
 
   # Configuration
   s <- list(
-    data = if (mutatedata) data else copy(data),
     time = time,
     cohort = cohort,
     unit = unit,
+    w = w,
     y0 = y0,
     y = y0[[2]],
+    het = het,
     fes = parseFEs(y0),
     coef = enexpr(coef),
-    tol = tol,
     maxit = maxit,
     with.se = with.se,
     verbose = verbose,
     OATT = OATT,
+    tol = tol,
     effective.sample = effective.sample,
+    ncontrasts = 1,
     nevertreated.value = nevertreated.value
   )
 
   s$controls <- parseControls(s$y0)
+
+  # Load data
+  s$data <- if (mutatedata) data else copy(subsetData(data, s))
+
+  # Coef level
+  if(!is.null(s$het)){
+    #TODO: Raise error if group not in data
+    s$by <- c('.k', s$het)
+    s$ncontrasts <- nlevels(factor(s$data[[s$het]]))
+  } else {
+    s$by <- '.k'
+  }
+
   class(s) <- "didImputation"
 
   # Prepare the data used for estimation
@@ -171,9 +189,15 @@ didImputation <- function(y0,
   # Impute counterfactual outcome
   s <- runImputation(s)
 
-  # Compute ATT by horizon
-  s$coefs <- s$data[d == 1, .(mean(tau)), by = k]$V1[1:(s$nweights)]
-  names(s$coefs) <- paste0("k::", 1:length(s$coefs) - 1)
+  # Compute ATT by horizon and get labels
+  s$coefs <- s$data[.d == 1, .(mean(.tau)), by = eval(s$by)][.k >= s$coef[[1]] & .k <= s$coef[[2]]]
+  if(s$ncontrasts == 1){
+    coeflabs <- paste0("k::", s$coefs$.k)
+  } else {
+    coeflabs <- paste0("k::", s$coefs$.k, ":", s$het, "::", s$coefs[[s$het]])
+  }
+  s$coefs <- s$coefs$V1
+  names(s$coefs) <- coeflabs
 
   if (s$with.se) {
     # Weights
@@ -194,6 +218,7 @@ didImputation <- function(y0,
     pre_table <- as.data.frame(fixest::coeftable(s$pre_trends),
       check.names = FALSE
     )
+    row.names(pre_table) <- gsub("^\\.", "", row.names(pre_table))
     s$coeftable <- rbind(pre_table, s$coeftable)
   }
 
@@ -207,7 +232,7 @@ coeftable <- function(s) {
       Estimate = s$coefs,
       "Std. Error" = unlist(s$se),
       `t value` = s$t,
-      "Pr(>|t|))" = s$pvalue,
+      "Pr(>|t|)" = s$pvalue,
       check.names = FALSE
     )
   } else {
@@ -217,7 +242,7 @@ coeftable <- function(s) {
       Estimate = s$coefs,
       "Std. Error" = na_vec,
       `t value` = na_vec,
-      "Pr(>|t|))" = na_vec,
+      "Pr(>|t|)" = na_vec,
       check.names = FALSE
     )
   }

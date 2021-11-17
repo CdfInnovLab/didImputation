@@ -11,6 +11,7 @@ didImputation(
   nevertreated.value = Inf,
   unit = NULL,
   time = NULL,
+  het = NULL,
   w = NULL,
   coef = -Inf:Inf,
   OATT = FALSE,
@@ -35,7 +36,9 @@ didImputation(
 
 \item{time}{Character, default is \code{NULL}. Time period identifier. If \code{NULL}, it default to the second fixed effect.}
 
-\item{w}{(not yet implemented) Numerical or Variable name. Default is \code{NULL}. Estimation weights}
+\item{het}{Character, default is \code{NULL}. Heterogeneity estimation. Column name of the additional group(s). Will produce an estimate for each group.}
+
+\item{w}{Numerical vector or Variable name. Default is \code{NULL}. Sample weights.}
 
 \item{coef}{R Expression of leads and lags (eg \code{coef = -5:8}). By default estimates whole dynamic effect. See Details.}
 
