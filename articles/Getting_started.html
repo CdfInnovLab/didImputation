@@ -175,33 +175,33 @@
 <span class="co">#&gt; Counterfactual model:  y ~ 0 | i + t </span>
 <span class="co">#&gt; Number of cohorts:  4 </span>
 <span class="co">#&gt; Observations: 12000 </span>
-<span class="co">#&gt; |-Treated:    5501 </span>
-<span class="co">#&gt; |-Untreated:  6499 </span>
+<span class="co">#&gt; |-Treated:    5656 </span>
+<span class="co">#&gt; |-Untreated:  6344 </span>
 <span class="co">#&gt;       Estimate Std. Error t value Pr(&gt;|t|) </span>
-<span class="co">#&gt; k::-3 -0.158   0.139      -1.131  0.258    </span>
-<span class="co">#&gt; k::-2 -0.173   0.155      -1.116  0.265    </span>
-<span class="co">#&gt; k::-1 -0.154   0.181      -0.854  0.393    </span>
-<span class="co">#&gt; k::0   0.922   0.074      12.485  &lt;0.001***</span>
-<span class="co">#&gt; k::1   2.066   0.080      25.720  &lt;0.001***</span>
-<span class="co">#&gt; k::2   3.065   0.100      30.761  &lt;0.001***</span>
-<span class="co">#&gt; k::3   4.018   0.125      32.188  &lt;0.001***</span>
-<span class="co">#&gt; k::4   5.088   0.182      28.009  &lt;0.001***</span>
+<span class="co">#&gt; k::-3 0.276    0.138       1.993  0.046**  </span>
+<span class="co">#&gt; k::-2 0.320    0.160       1.999  0.046**  </span>
+<span class="co">#&gt; k::-1 0.352    0.190       1.850  0.064*   </span>
+<span class="co">#&gt; k::0  0.979    0.076      12.848  &lt;0.001***</span>
+<span class="co">#&gt; k::1  1.953    0.083      23.583  &lt;0.001***</span>
+<span class="co">#&gt; k::2  3.160    0.104      30.417  &lt;0.001***</span>
+<span class="co">#&gt; k::3  4.017    0.135      29.648  &lt;0.001***</span>
+<span class="co">#&gt; k::4  5.093    0.182      28.016  &lt;0.001***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. Code: 0 '***' 0.01 '**' 0.05 '*' 0.1 '' 1 </span>
 <span class="co">#&gt; Wald stats for pre-trends:</span>
-<span class="co">#&gt; Wald (joint nullity): stat = 0.522024, p = 0.667123, on 3 and 6,490 DoF, VCOV: Clustered (i).</span></code></pre></div>
+<span class="co">#&gt; Wald (joint nullity): stat = 1.5263, p = 0.205471, on 3 and 6,335 DoF, VCOV: Clustered (i).</span></code></pre></div>
 <p>You can extract the coefficients table if you want to build your own plot or table.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">est</span><span class="op">$</span><span class="va">coeftable</span>
-<span class="co">#&gt;         Estimate Std. Error    t value      Pr(&gt;|t|)</span>
-<span class="co">#&gt; k::-3 -0.1576485 0.13932973 -1.1314782  2.579896e-01</span>
-<span class="co">#&gt; k::-2 -0.1725236 0.15465355 -1.1155489  2.647494e-01</span>
-<span class="co">#&gt; k::-1 -0.1542718 0.18072744 -0.8536156  3.934203e-01</span>
-<span class="co">#&gt; k::0   0.9224779 0.07388426 12.4854459  8.963968e-36</span>
-<span class="co">#&gt; k::1   2.0661605 0.08033218 25.7202101 6.946557e-146</span>
-<span class="co">#&gt; k::2   3.0654385 0.09965361 30.7609379 8.731689e-208</span>
-<span class="co">#&gt; k::3   4.0176418 0.12481845 32.1878851 2.607775e-227</span>
-<span class="co">#&gt; k::4   5.0884042 0.18166843 28.0092926 1.252075e-172</span></code></pre></div>
+<span class="co">#&gt;        Estimate Std. Error   t value      Pr(&gt;|t|)</span>
+<span class="co">#&gt; k::-3 0.2759762 0.13847661  1.992944  4.640330e-02</span>
+<span class="co">#&gt; k::-2 0.3197968 0.16000348  1.998686  4.577749e-02</span>
+<span class="co">#&gt; k::-1 0.3524048 0.19047179  1.850168  6.443680e-02</span>
+<span class="co">#&gt; k::0  0.9785978 0.07616498 12.848396  8.781244e-38</span>
+<span class="co">#&gt; k::1  1.9528805 0.08280827 23.583158 5.738366e-123</span>
+<span class="co">#&gt; k::2  3.1595602 0.10387491 30.416972 3.276651e-203</span>
+<span class="co">#&gt; k::3  4.0167294 0.13548186 29.647729 3.628054e-193</span>
+<span class="co">#&gt; k::4  5.0932511 0.18179543 28.016386 1.026173e-172</span></code></pre></div>
 <p>Finally, we can plot the coefficients from the fully dynamic model using the <code>didplot</code> function (note that you can choose the confidence interval level to report). The results are very close to the true effects:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/didplot.html">didplot</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span> <span class="op">+</span>
@@ -224,21 +224,21 @@
 <span class="co">#&gt; Counterfactual model:  y ~ 0 | i + t </span>
 <span class="co">#&gt; Number of cohorts:  4 </span>
 <span class="co">#&gt; Observations: 12000 </span>
-<span class="co">#&gt; |-Treated:    5501 </span>
-<span class="co">#&gt; |-Untreated:  6499 </span>
+<span class="co">#&gt; |-Treated:    5656 </span>
+<span class="co">#&gt; |-Untreated:  6344 </span>
 <span class="co">#&gt;       Estimate Std. Error t value Pr(&gt;|t|) </span>
-<span class="co">#&gt; k::-3 -0.158   0.139      -1.131  0.258    </span>
-<span class="co">#&gt; k::-2 -0.173   0.155      -1.116  0.265    </span>
-<span class="co">#&gt; k::-1 -0.154   0.181      -0.854  0.393    </span>
-<span class="co">#&gt; k::0   0.922   0.074      12.485  &lt;0.001***</span>
-<span class="co">#&gt; k::1   2.066   0.080      25.720  &lt;0.001***</span>
-<span class="co">#&gt; k::2   3.065   0.100      30.761  &lt;0.001***</span>
-<span class="co">#&gt; k::3   4.018   0.125      32.188  &lt;0.001***</span>
-<span class="co">#&gt; k::4   5.088   0.182      28.009  &lt;0.001***</span>
+<span class="co">#&gt; k::-3 0.276    0.138       1.993  0.046**  </span>
+<span class="co">#&gt; k::-2 0.320    0.160       1.999  0.046**  </span>
+<span class="co">#&gt; k::-1 0.352    0.190       1.850  0.064*   </span>
+<span class="co">#&gt; k::0  0.979    0.076      12.848  &lt;0.001***</span>
+<span class="co">#&gt; k::1  1.953    0.083      23.583  &lt;0.001***</span>
+<span class="co">#&gt; k::2  3.160    0.104      30.417  &lt;0.001***</span>
+<span class="co">#&gt; k::3  4.017    0.135      29.648  &lt;0.001***</span>
+<span class="co">#&gt; k::4  5.093    0.182      28.016  &lt;0.001***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. Code: 0 '***' 0.01 '**' 0.05 '*' 0.1 '' 1 </span>
 <span class="co">#&gt; Wald stats for pre-trends:</span>
-<span class="co">#&gt; Wald (joint nullity): stat = 0.522024, p = 0.667123, on 3 and 6,490 DoF, VCOV: Clustered (i).</span></code></pre></div>
+<span class="co">#&gt; Wald (joint nullity): stat = 1.5263, p = 0.205471, on 3 and 6,335 DoF, VCOV: Clustered (i).</span></code></pre></div>
 </div>
 <div id="including-other-fixed-effects" class="section level2">
 <h2 class="hasAnchor">
@@ -262,21 +262,21 @@
 <span class="co">#&gt; Counterfactual model:  y ~ 0 | i + t + hdfefactor </span>
 <span class="co">#&gt; Number of cohorts:  4 </span>
 <span class="co">#&gt; Observations: 12000 </span>
-<span class="co">#&gt; |-Treated:    5546 </span>
-<span class="co">#&gt; |-Untreated:  6454 </span>
+<span class="co">#&gt; |-Treated:    5575 </span>
+<span class="co">#&gt; |-Untreated:  6425 </span>
 <span class="co">#&gt;       Estimate Std. Error t value Pr(&gt;|t|) </span>
-<span class="co">#&gt; k::-3 -0.080   0.137      -0.583  0.56     </span>
-<span class="co">#&gt; k::-2 -0.113   0.154      -0.732  0.464    </span>
-<span class="co">#&gt; k::-1  0.222   0.181       1.222  0.222    </span>
-<span class="co">#&gt; k::0   0.979   0.075      12.975  &lt;0.001***</span>
-<span class="co">#&gt; k::1   2.040   0.082      25.006  &lt;0.001***</span>
-<span class="co">#&gt; k::2   2.926   0.104      28.084  &lt;0.001***</span>
-<span class="co">#&gt; k::3   4.083   0.133      30.783  &lt;0.001***</span>
-<span class="co">#&gt; k::4   5.411   0.185      29.305  &lt;0.001***</span>
+<span class="co">#&gt; k::-3 -0.167   0.143      -1.163  0.245    </span>
+<span class="co">#&gt; k::-2 -0.126   0.158      -0.795  0.427    </span>
+<span class="co">#&gt; k::-1  0.017   0.186       0.094  0.925    </span>
+<span class="co">#&gt; k::0   0.998   0.074      13.512  &lt;0.001***</span>
+<span class="co">#&gt; k::1   2.064   0.082      25.108  &lt;0.001***</span>
+<span class="co">#&gt; k::2   3.052   0.102      29.981  &lt;0.001***</span>
+<span class="co">#&gt; k::3   4.033   0.128      31.471  &lt;0.001***</span>
+<span class="co">#&gt; k::4   5.124   0.190      27.011  &lt;0.001***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. Code: 0 '***' 0.01 '**' 0.05 '*' 0.1 '' 1 </span>
 <span class="co">#&gt; Wald stats for pre-trends:</span>
-<span class="co">#&gt; Wald (joint nullity): stat = 4.89599, p = 0.002119, on 3 and 6,406 DoF, VCOV: Clustered (i).</span></code></pre></div>
+<span class="co">#&gt; Wald (joint nullity): stat = 1.49337, p = 0.214182, on 3 and 6,377 DoF, VCOV: Clustered (i).</span></code></pre></div>
 </div>
 <div id="including-continuous-controls" class="section level2">
 <h2 class="hasAnchor">
@@ -300,28 +300,28 @@
 <span class="co">#&gt; Counterfactual model:  y ~ x1 | i + t </span>
 <span class="co">#&gt; Number of cohorts:  8 </span>
 <span class="co">#&gt; Observations: 20000 </span>
-<span class="co">#&gt; |-Treated:    9718 </span>
-<span class="co">#&gt; |-Untreated:  10282 </span>
+<span class="co">#&gt; |-Treated:    9840 </span>
+<span class="co">#&gt; |-Untreated:  10160 </span>
 <span class="co">#&gt;       Estimate Std. Error t value Pr(&gt;|t|) </span>
-<span class="co">#&gt; k::-5 -0.020   0.098       -0.205 0.838    </span>
-<span class="co">#&gt; k::-4  0.085   0.101        0.837 0.403    </span>
-<span class="co">#&gt; k::-3 -0.030   0.115       -0.262 0.793    </span>
-<span class="co">#&gt; k::-2  0.045   0.126        0.355 0.723    </span>
-<span class="co">#&gt; k::-1 -0.021   0.139       -0.149 0.882    </span>
-<span class="co">#&gt; x1     2.002   0.011      181.251 &lt;0.001***</span>
-<span class="co">#&gt; k::0   1.046   0.064       16.378 &lt;0.001***</span>
-<span class="co">#&gt; k::1   2.095   0.066       31.535 &lt;0.001***</span>
-<span class="co">#&gt; k::2   3.067   0.076       40.432 &lt;0.001***</span>
-<span class="co">#&gt; k::3   4.018   0.086       46.511 &lt;0.001***</span>
-<span class="co">#&gt; k::4   5.225   0.096       54.392 &lt;0.001***</span>
-<span class="co">#&gt; k::5   6.048   0.108       55.910 &lt;0.001***</span>
-<span class="co">#&gt; k::6   6.947   0.130       53.495 &lt;0.001***</span>
-<span class="co">#&gt; k::7   7.945   0.161       49.407 &lt;0.001***</span>
-<span class="co">#&gt; k::8   9.169   0.243       37.784 &lt;0.001***</span>
+<span class="co">#&gt; k::-5 -0.016   0.097       -0.161 0.872    </span>
+<span class="co">#&gt; k::-4  0.070   0.105        0.668 0.504    </span>
+<span class="co">#&gt; k::-3  0.011   0.119        0.092 0.927    </span>
+<span class="co">#&gt; k::-2  0.023   0.133        0.173 0.863    </span>
+<span class="co">#&gt; k::-1 -0.001   0.149       -0.007 0.994    </span>
+<span class="co">#&gt; x1     1.984   0.011      179.495 &lt;0.001***</span>
+<span class="co">#&gt; k::0   1.034   0.062       16.667 &lt;0.001***</span>
+<span class="co">#&gt; k::1   1.990   0.068       29.398 &lt;0.001***</span>
+<span class="co">#&gt; k::2   2.930   0.076       38.615 &lt;0.001***</span>
+<span class="co">#&gt; k::3   3.993   0.085       46.810 &lt;0.001***</span>
+<span class="co">#&gt; k::4   4.942   0.099       49.989 &lt;0.001***</span>
+<span class="co">#&gt; k::5   6.039   0.116       52.246 &lt;0.001***</span>
+<span class="co">#&gt; k::6   6.903   0.139       49.809 &lt;0.001***</span>
+<span class="co">#&gt; k::7   7.914   0.172       45.990 &lt;0.001***</span>
+<span class="co">#&gt; k::8   8.982   0.241       37.203 &lt;0.001***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. Code: 0 '***' 0.01 '**' 0.05 '*' 0.1 '' 1 </span>
 <span class="co">#&gt; Wald stats for pre-trends:</span>
-<span class="co">#&gt; Wald (joint nullity): stat = 5,499.1, p &lt; 2.2e-16, on 6 and 10,266 DoF, VCOV: Clustered (i).</span></code></pre></div>
+<span class="co">#&gt; Wald (joint nullity): stat = 5,387.1, p &lt; 2.2e-16, on 6 and 10,144 DoF, VCOV: Clustered (i).</span></code></pre></div>
 </div>
 <div id="heterogeneity" class="section level2">
 <h2 class="hasAnchor">
