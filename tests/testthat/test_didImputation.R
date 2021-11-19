@@ -179,6 +179,27 @@ test_that("Throw error if user asks for more coefs than available", {
   ), regexp = "*Leads must be greater*")
 })
 
+test_that("Estimation is robust to NA", {
+  dt_gen <- generateDidData(i = 1000,
+                            t = 5,
+                            treatment = ~ d * (ig+1) * (k+1)
+
+  )
+
+  dt_gen[!is.na(dt_gen)][sample(seq(dt_gen[!is.na(dt_gen)]),length(dt_gen[!is.na(dt_gen)])*(0.10))] <- NA
+
+  dt_gen <- as.data.frame(sapply(dt_gen, as.numeric))
+
+  res <- function(){suppressWarnings(didImputation(y ~ 0 | i + t,
+                       cohort = "g",
+                       data = dt_gen, "warnings"))}
+
+  # There should not be any NA standard error.
+  expect_false(any(is.na(res()$se)))
+  expect_message(res(), regexp = "*Removed*")
+
+})
+
 # Check methods
 
 test_that("Coefs can be extracted", {
