@@ -49,9 +49,15 @@ test_that("Estimation can include controls", {
 test_that("Regression on simulated data gives the right results", {
   res <- eval(basicReg)
 
-  error <- sum(res$coefs - c(0.973520, 2.085544, 2.990625, 3.980677, 4.774795)) < 1e-05
+  error <- sum(res$coefs - c(0.973520, 2.085544, 2.990625, 3.980677, 4.774795)) < 1e-06
 
   expect_true(error)
+})
+
+test_that("Weights are correctly estimated and can predict point estimates", {
+  res <- eval(basicReg)
+
+  expect_true(t(res$data$.w_0) %*% res$data$y - res$coefs[1] < 1e-4)
 })
 
 test_that("Warn about small effective sample", {
