@@ -10,13 +10,21 @@
 #'
 #' @import data.table
 #' @importFrom collapse fmin fmax fsum
-#' @importFrom stats na.omit
+#' @importFrom stats complete.cases
 #' @return Augmented list with configured arguments.
 #'
 prepare <- function(s) {
   .k <- NULL
   .d <- NULL
-  . <- NULL
+
+  # Remove NAs
+  complete <- complete.cases(s$data)
+  nas <- fsum(!complete.cases(s$data))
+  if (nas != 0) {
+    message("Removed ", nas, " observations due to NA.")
+    s$data <- s$data[complete, ]
+  }
+
   # Check if data table
   s$data <- if (!is.data.table(s$data)) setDT(s$data) else s$data
 

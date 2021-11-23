@@ -49,9 +49,15 @@ test_that("Estimation can include controls", {
 test_that("Regression on simulated data gives the right results", {
   res <- eval(basicReg)
 
-  error <- sum(res$coefs - c(0.973520, 2.085544, 2.990625, 3.980677, 4.774795)) < 1e-05
+  error <- sum(res$coefs - c(0.973520, 2.085544, 2.990625, 3.980677, 4.774795)) < 1e-06
 
   expect_true(error)
+})
+
+test_that("Weights are correctly estimated and can predict point estimates", {
+  res <- eval(basicReg)
+
+  expect_true(t(res$data$.w_0) %*% res$data$y - res$coefs[1] < 1e-4)
 })
 
 test_that("Warn about small effective sample", {
@@ -177,6 +183,27 @@ test_that("Throw error if user asks for more coefs than available", {
     coef = -200:Inf,
     data = did_simulated,
   ), regexp = "*Leads must be greater*")
+})
+
+test_that("Estimation is robust to NA", {
+  dt_gen <- generateDidData(i = 1000,
+                            t = 5,
+                            treatment = ~ d * (ig+1) * (k+1)
+
+  )
+
+  dt_gen[!is.na(dt_gen)][sample(seq(dt_gen[!is.na(dt_gen)]),length(dt_gen[!is.na(dt_gen)])*(0.10))] <- NA
+
+  dt_gen <- as.data.frame(sapply(dt_gen, as.numeric))
+
+  res <- function(){suppressWarnings(didImputation(y ~ 0 | i + t,
+                       cohort = "g",
+                       data = dt_gen, "warnings"))}
+
+  # There should not be any NA standard error.
+  expect_false(any(is.na(res()$se)))
+  expect_message(res(), regexp = "*Removed*")
+
 })
 
 # Check methods
